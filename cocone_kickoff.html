@@ -28,7 +28,7 @@
             flex-direction: column;
             justify-content: center;
             position: relative;
-            padding: 120px 0;
+            padding: 80px 0;
             border-bottom: 1px solid #f8fafc;
             perspective: 2000px;
         }
@@ -37,14 +37,14 @@
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 背景パララックス装飾 */
+        /* 背景パララックス装飾（適正サイズに縮小） */
         .bg-number {
-            font-size: 55vw;
+            font-size: 40vw;
             line-height: 1;
             font-weight: 900;
             color: #f1f5f9;
             position: absolute;
-            right: -12vw;
+            right: -8vw;
             top: 50%;
             transform: translateY(-50%);
             z-index: -1;
@@ -53,12 +53,12 @@
             transition: transform 0.05s linear, opacity 0.8s ease;
             opacity: 0;
         }
-        section.active .bg-number { opacity: 1; }
+        section.active .bg-number { opacity: 0.8; }
 
         .floating-element {
             position: absolute;
             z-index: -1;
-            opacity: 0.4;
+            opacity: 0.3;
             pointer-events: none;
             transition: transform 0.05s linear;
         }
@@ -66,23 +66,23 @@
         /* アニメーション：リビール */
         .reveal {
             opacity: 0;
-            transform: translateY(70px);
-            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .active .reveal {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .stagger-1 { transition-delay: 0.15s; }
-        .stagger-2 { transition-delay: 0.3s; }
-        .stagger-3 { transition-delay: 0.45s; }
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
         
-        /* ナビゲーション */
+        /* ナビゲーション（ピル型） */
         .nav-pill {
-            padding: 8px 22px;
+            padding: 6px 18px;
             border-radius: 9999px;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 900;
             color: #64748b;
             border: 1px solid #e2e8f0;
@@ -103,11 +103,11 @@
             border: 1px solid #e2e8f0;
             border-radius: 2rem;
             transition: all 0.1s linear;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
             z-index: 10;
         }
         .active .agenda-card {
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.08);
         }
 
         /* ステータスボタン */
@@ -118,35 +118,51 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 160px;
-            padding: 12px 24px;
-            border-radius: 14px;
-            font-size: 14px;
+            min-width: 130px;
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 900;
             letter-spacing: 0.05em;
             border-bottom: 4px solid rgba(0,0,0,0.2);
             text-align: center;
         }
         .status-btn:active {
-            transform: translateY(3px) !important;
+            transform: translateY(2px) !important;
             border-bottom-width: 1px;
         }
         .status-NOT-STARTED { background-color: #475569; color: #ffffff; border-color: #1e293b; }
         .status-IN-PROGRESS { background-color: #2563eb; color: #ffffff; border-color: #1e40af; }
         .status-COMPLETED { background-color: #059669; color: #ffffff; border-color: #064e3b; }
 
+        /* 条件付き表示 */
+        .action-item {
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 150px;
+            opacity: 1;
+            overflow: hidden;
+        }
+        .action-item.hidden-action {
+            max-height: 0;
+            opacity: 0;
+            margin: 0 !important;
+            padding: 0 !important;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+
         .member-initial {
-            width: 80px;
-            height: 80px;
-            border-radius: 24px;
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 900;
-            font-size: 36px;
+            font-size: 28px;
             flex-shrink: 0;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 15px -4px rgba(0,0,0,0.1);
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -157,11 +173,11 @@
 
     <!-- Header -->
     <header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
-        <div class="absolute top-0 left-0 h-[4px] bg-blue-600 w-0" id="progress-bar"></div>
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center overflow-x-auto no-scrollbar">
+        <div class="absolute top-0 left-0 h-[3px] bg-blue-600 w-0" id="progress-bar"></div>
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center overflow-x-auto no-scrollbar">
             <div class="flex items-center space-x-6 shrink-0">
-                <span class="text-[12px] font-black text-slate-900 uppercase tracking-[0.3em]">Contents</span>
-                <nav class="flex items-center space-x-3">
+                <span class="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Contents</span>
+                <nav class="flex items-center space-x-2">
                     <a href="#launch" class="nav-pill active" data-nav="launch">概要</a>
                     <a href="#scope" class="nav-pill" data-nav="scope">実施範囲</a>
                     <a href="#structure" class="nav-pill" data-nav="structure">体制図</a>
@@ -170,9 +186,9 @@
                     <a href="#next" class="nav-pill" data-nav="next">アクション</a>
                 </nav>
             </div>
-            <div class="ml-auto hidden lg:flex flex-col items-end shrink-0 pl-10 border-l border-gray-100">
-                <span class="text-[10px] font-black text-blue-600 tracking-widest uppercase leading-none font-bold">BPIO Kickoff</span>
-                <span class="text-[10px] font-black text-slate-900 mt-1 uppercase tracking-tighter">2026.04.06 AGENDA</span>
+            <div class="ml-auto hidden lg:flex flex-col items-end shrink-0 pl-8 border-l border-gray-100">
+                <span class="text-[9px] font-black text-blue-600 tracking-widest uppercase leading-none font-bold">BPIO Kickoff</span>
+                <span class="text-[9px] font-black text-slate-900 mt-1 uppercase tracking-tighter">2026.04.06 AGENDA</span>
             </div>
         </div>
     </header>
@@ -181,20 +197,20 @@
 
         <!-- 01: Project Launch -->
         <section id="launch" class="relative">
-            <div class="bg-number" data-speed="1.5">01</div>
-            <div class="floating-element top-[12%] left-[8%]" data-speed="2.5"><i data-lucide="circle" class="w-64 h-64 text-blue-100 opacity-40"></i></div>
+            <div class="bg-number" data-speed="1.2">01</div>
+            <div class="floating-element top-[15%] left-[10%]" data-speed="2.0"><i data-lucide="circle" class="w-48 h-48 text-blue-100 opacity-40"></i></div>
             
             <div class="reveal">
-                <div class="flex items-center space-x-3 mb-10">
-                    <span class="w-20 h-[5px] bg-blue-600"></span>
-                    <span class="text-blue-600 font-black text-[16px] tracking-[0.6em] uppercase">Kickoff Meeting</span>
+                <div class="flex items-center space-x-3 mb-8">
+                    <span class="w-12 h-[3px] bg-blue-600"></span>
+                    <span class="text-blue-600 font-black text-[12px] tracking-[0.4em] uppercase">Kickoff Meeting</span>
                 </div>
-                <h1 class="text-6xl md:text-8xl font-black text-slate-900 leading-[1.2] mb-14 tracking-tighter">
+                <h1 class="text-4xl md:text-6xl font-black text-slate-900 leading-[1.2] mb-10 tracking-tighter">
                     ココネグループ様<br>
                     バクラク勤怠導入<br>
                     <span class="text-blue-600">プロジェクト</span>
                 </h1>
-                <p class="text-2xl text-slate-500 font-black reveal stagger-1 tracking-widest uppercase">
+                <p class="text-lg text-slate-500 font-black reveal stagger-1 tracking-widest uppercase">
                     Execution & Implementation Roadmap
                 </p>
             </div>
@@ -202,142 +218,109 @@
 
         <!-- 02: Implementation Scope -->
         <section id="scope" class="relative">
-            <div class="bg-number" data-speed="1.8">02</div>
-            <div class="floating-element bottom-[15%] right-[8%]" data-speed="3.0"><i data-lucide="plus" class="w-48 h-48 text-blue-50"></i></div>
+            <div class="bg-number" data-speed="1.4">02</div>
+            <div class="floating-element bottom-[15%] right-[10%]" data-speed="2.5"><i data-lucide="plus" class="w-32 h-32 text-blue-50"></i></div>
             
-            <div class="reveal mb-20">
-                <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter uppercase text-slate-900">Scope.</h2>
-                <p class="text-slate-600 text-[14px] font-black uppercase tracking-[0.4em] border-l-8 border-blue-600 pl-4">要件定義から構築、移行まで一貫支援</p>
+            <div class="reveal mb-16">
+                <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase text-slate-900">Scope.</h2>
+                <p class="text-slate-600 text-[11px] font-black uppercase tracking-[0.3em] border-l-4 border-blue-600 pl-4">要件定義から構築、移行まで一貫支援</p>
             </div>
             
-            <div class="grid md:grid-cols-2 gap-10">
-                <div class="agenda-card p-14 reveal stagger-1 border-l-[14px] border-l-blue-600" data-speed="0.15">
-                    <div class="flex items-center space-x-6 mb-12">
-                        <div class="p-5 bg-blue-600 text-white rounded-3xl shadow-2xl shadow-blue-300"><i data-lucide="layout-template" class="w-10 h-10"></i></div>
-                        <h4 class="font-black text-3xl uppercase tracking-tight">Design & Setup</h4>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="agenda-card p-10 reveal stagger-1 border-l-[10px] border-l-blue-600" data-speed="0.1">
+                    <div class="flex items-center space-x-5 mb-8">
+                        <div class="p-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200"><i data-lucide="layout-template" class="w-6 h-6"></i></div>
+                        <h4 class="font-black text-xl uppercase tracking-tight">Design & Setup</h4>
                     </div>
-                    <h5 class="font-black text-xl text-slate-900 mb-6 border-b-4 border-blue-100 pb-3 inline-block">要件定義・システム設計と設定</h5>
-                    <p class="text-lg text-slate-700 leading-relaxed font-bold">就業規則に基づき、BPIOが主体となって要件定義を実施。13パターンの勤務体系・36協定・休暇ルールをパラメータ化し、バクラク環境へマスタ登録・構築を完遂します。</p>
+                    <h5 class="font-black text-base text-slate-900 mb-4 border-b-2 border-blue-100 pb-2 inline-block">要件定義・システム設計と設定</h5>
+                    <p class="text-sm text-slate-700 leading-relaxed font-bold">就業規則に基づき、BPIOが主体となって要件定義を実施。13パターンの勤務体系・36協定・休暇ルールをパラメータ化し、バクラク環境へマスタ登録・構築を完遂します。</p>
                 </div>
-                <div class="agenda-card p-14 reveal stagger-2 border-l-[14px] border-l-slate-900" data-speed="0.22">
-                    <div class="flex items-center space-x-6 mb-12">
-                        <div class="p-5 bg-slate-900 text-white rounded-3xl shadow-2xl shadow-slate-300"><i data-lucide="database-forward" class="w-10 h-10"></i></div>
-                        <h4 class="font-black text-3xl uppercase tracking-tight">Data Migration</h4>
+                <div class="agenda-card p-10 reveal stagger-2 border-l-[10px] border-l-slate-900" data-speed="0.15">
+                    <div class="flex items-center space-x-5 mb-8">
+                        <div class="p-3 bg-slate-900 text-white rounded-2xl shadow-lg shadow-slate-200"><i data-lucide="database-forward" class="w-6 h-6"></i></div>
+                        <h4 class="font-black text-xl uppercase tracking-tight">Data Migration</h4>
                     </div>
-                    <h5 class="font-black text-xl text-slate-900 mb-6 border-b-4 border-slate-100 pb-3 inline-block">従業員情報の移行・検証</h5>
-                    <p class="text-lg text-slate-700 leading-relaxed font-bold">3社合計840名の従業員マスタ登録、有休自動付与ルールの実装、および過去1年分の勤怠実績のクレンジング移行を全責任を持って担当します。</p>
+                    <h5 class="font-black text-base text-slate-900 mb-4 border-b-2 border-slate-100 pb-2 inline-block">従業員情報の移行・検証</h5>
+                    <p class="text-sm text-slate-700 leading-relaxed font-bold">3社合計840名の従業員マスタ登録、有休自動付与ルールの実装、および過去1年分の勤怠実績のクレンジング移行を全責任を持って担当します。</p>
                 </div>
             </div>
         </section>
 
         <!-- 03: Project Structure -->
         <section id="structure" class="relative">
-            <div class="bg-number" data-speed="1.2">03</div>
-            <div class="reveal mb-20">
-                <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter uppercase text-slate-900 font-bold">Structure.</h2>
-                <p class="text-slate-600 text-[14px] font-black uppercase tracking-[0.4em] border-l-8 border-slate-900 pl-4 font-bold">プロジェクト実行体制</p>
+            <div class="bg-number" data-speed="1.1">03</div>
+            <div class="reveal mb-16">
+                <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase text-slate-900 font-bold">Structure.</h2>
+                <p class="text-slate-600 text-[11px] font-black uppercase tracking-[0.3em] border-l-4 border-slate-900 pl-4 font-bold">プロジェクト実行体制</p>
             </div>
             
-            <div class="space-y-24">
-                <!-- Project Manager -->
-                <div class="reveal stagger-1" data-speed="0.1">
-                    <div class="flex items-center justify-between mb-8 border-b-4 border-blue-600 pb-4">
-                        <h3 class="text-5xl font-black text-slate-900 uppercase tracking-tight">Project Manager</h3>
-                        <div class="flex items-center space-x-4">
-                            <span class="text-sm font-black text-blue-600 uppercase tracking-[0.4em] font-bold">Decision Maker</span>
-                            <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl shadow-sm"><i data-lucide="crown" class="w-8 h-8"></i></div>
+            <div class="space-y-16">
+                <!-- Project Manager Section -->
+                <div class="reveal stagger-1" data-speed="0.08">
+                    <div class="flex items-center justify-between mb-6 border-b-2 border-blue-600 pb-3">
+                        <h3 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Project Manager</h3>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] font-bold">Decision Maker</span>
+                            <div class="p-2 bg-blue-50 text-blue-600 rounded-xl"><i data-lucide="award" class="w-5 h-5"></i></div>
                         </div>
                     </div>
-                    
-                    <div class="agenda-card p-12 border-l-[16px] border-l-blue-600 group hover:border-blue-500 transition-all duration-500">
-                        <div class="flex items-center space-x-10 mb-12">
-                            <div class="member-initial bg-blue-600 ring-8 ring-blue-50">藤</div>
-                            <div>
-                                <h4 class="text-5xl font-black text-slate-900 tracking-tighter mb-2">藤吉</h4>
-                                <span class="text-sm font-black text-blue-600 uppercase tracking-[0.4em] font-bold">Lead Consultant / Decision Maker</span>
+                    <div class="agenda-card p-10 border-l-[12px] border-l-blue-600">
+                        <div class="flex flex-col md:flex-row md:items-center gap-8">
+                            <div class="flex items-center space-x-6 shrink-0">
+                                <div class="member-initial bg-blue-600">藤</div>
+                                <h4 class="text-2xl font-black text-slate-900 tracking-tighter">藤吉</h4>
                             </div>
-                        </div>
-                        <div class="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 relative group-hover:bg-white transition-colors">
-                            <div class="flex items-start space-x-6">
-                                <div class="p-3 bg-white text-blue-600 rounded-xl shadow-md shrink-0"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
-                                <div>
-                                    <h5 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">担当業務内容</h5>
-                                    <p class="text-2xl text-slate-700 font-black leading-relaxed">要件定義・設計の最終承認、および全体進捗管理を統括します。</p>
-                                </div>
+                            <div class="flex-grow p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
+                                <h5 class="text-blue-600 block text-[10px] uppercase tracking-widest mb-2 font-black">主な担当業務</h5>
+                                <p class="text-base text-slate-700 font-black leading-relaxed">
+                                    要件定義・設計の最終承認、および全体進捗管理を統括します。
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Project Member -->
-                <div class="reveal stagger-2" data-speed="0.18">
-                    <div class="flex items-center justify-between mb-8 border-b-4 border-slate-900 pb-4">
-                        <h3 class="text-5xl font-black text-slate-900 uppercase tracking-tight">Project Member</h3>
-                        <div class="flex items-center space-x-4">
-                            <span class="text-sm font-black text-slate-500 uppercase tracking-[0.4em] font-bold">Implementation Staff</span>
-                            <div class="p-3 bg-slate-50 text-slate-400 rounded-2xl shadow-sm"><i data-lucide="users" class="w-8 h-8"></i></div>
+                <!-- Project Member Section -->
+                <div class="reveal stagger-2" data-speed="0.14">
+                    <div class="flex items-center justify-between mb-6 border-b-2 border-slate-900 pb-3">
+                        <h3 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Project Member</h3>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] font-bold">Implementation Staff</span>
+                            <div class="p-2 bg-slate-50 text-slate-400 rounded-xl"><i data-lucide="users" class="w-5 h-5"></i></div>
                         </div>
                     </div>
-                    
-                    <div class="grid md:grid-cols-3 gap-10">
+                    <div class="grid md:grid-cols-3 gap-6">
                         <!-- Tanaka -->
-                        <div class="agenda-card p-10 border-t-[12px] border-t-slate-800 hover:scale-[1.02] transition-transform">
-                            <div class="flex items-center space-x-6 mb-10">
-                                <div class="member-initial bg-slate-900 w-16 h-16 text-2xl rounded-2xl ring-4 ring-slate-50">田</div>
-                                <div>
-                                    <h4 class="text-2xl font-black text-slate-900 tracking-tight">田中</h4>
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Setup Staff</span>
-                                </div>
+                        <div class="agenda-card p-8 border-t-[10px] border-t-slate-800">
+                            <div class="flex items-center space-x-5 mb-6">
+                                <div class="member-initial bg-slate-900 w-12 h-12 text-lg rounded-xl">田</div>
+                                <h4 class="text-xl font-black text-slate-900 tracking-tight">田中</h4>
                             </div>
-                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                <div class="flex items-center space-x-3 text-slate-700 font-black">
-                                    <i data-lucide="settings-2" class="w-4 h-4 text-slate-400"></i>
-                                    <span class="text-sm">システム設定</span>
-                                </div>
-                                <div class="flex items-center space-x-3 text-slate-700 font-black mt-2">
-                                    <i data-lucide="database" class="w-4 h-4 text-slate-400"></i>
-                                    <span class="text-sm">データ移行</span>
-                                </div>
+                            <div class="pt-4 border-t border-slate-100">
+                                <h5 class="text-slate-500 block text-[9px] uppercase tracking-widest mb-2 font-black">担当範囲</h5>
+                                <p class="text-sm text-slate-700 font-black leading-snug">システム設定・データ移行</p>
                             </div>
                         </div>
                         <!-- Kitahata -->
-                        <div class="agenda-card p-10 border-t-[12px] border-t-slate-800 hover:scale-[1.02] transition-transform">
-                            <div class="flex items-center space-x-6 mb-10">
-                                <div class="member-initial bg-slate-900 w-16 h-16 text-2xl rounded-2xl ring-4 ring-slate-50">北</div>
-                                <div>
-                                    <h4 class="text-2xl font-black text-slate-900 tracking-tight">北畑</h4>
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Setup Staff</span>
-                                </div>
+                        <div class="agenda-card p-8 border-t-[10px] border-t-slate-800">
+                            <div class="flex items-center space-x-5 mb-6">
+                                <div class="member-initial bg-slate-900 w-12 h-12 text-lg rounded-xl">北</div>
+                                <h4 class="text-xl font-black text-slate-900 tracking-tight">北畑</h4>
                             </div>
-                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                <div class="flex items-center space-x-3 text-slate-700 font-black">
-                                    <i data-lucide="settings-2" class="w-4 h-4 text-slate-400"></i>
-                                    <span class="text-sm">システム設定</span>
-                                </div>
-                                <div class="flex items-center space-x-3 text-slate-700 font-black mt-2">
-                                    <i data-lucide="database" class="w-4 h-4 text-slate-400"></i>
-                                    <span class="text-sm">データ移行</span>
-                                </div>
+                            <div class="pt-4 border-t border-slate-100">
+                                <h5 class="text-slate-500 block text-[9px] uppercase tracking-widest mb-2 font-black">担当範囲</h5>
+                                <p class="text-sm text-slate-700 font-black leading-snug">システム設定・データ移行</p>
                             </div>
                         </div>
                         <!-- Nomura -->
-                        <div class="agenda-card p-10 border-t-[12px] border-t-slate-800 hover:scale-[1.02] transition-transform">
-                            <div class="flex items-center space-x-6 mb-10">
-                                <div class="member-initial bg-slate-900 w-16 h-16 text-2xl rounded-2xl ring-4 ring-slate-50">野</div>
-                                <div>
-                                    <h4 class="text-2xl font-black text-slate-900 tracking-tight">野村</h4>
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verification Staff</span>
-                                </div>
+                        <div class="agenda-card p-8 border-t-[10px] border-t-slate-800">
+                            <div class="flex items-center space-x-5 mb-6">
+                                <div class="member-initial bg-slate-900 w-12 h-12 text-lg rounded-xl">野</div>
+                                <h4 class="text-xl font-black text-slate-900 tracking-tight">野村</h4>
                             </div>
-                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                <div class="flex items-center space-x-3 text-slate-700 font-black">
-                                    <i data-lucide="shield-check" class="w-4 h-4 text-slate-400"></i>
-                                    <span class="text-sm">実環境での動作検証</span>
-                                </div>
-                                <div class="flex items-center space-x-3 text-slate-700 font-black mt-2 opacity-30">
-                                    <i data-lucide="minus" class="w-4 h-4"></i>
-                                    <span class="text-sm">--</span>
-                                </div>
+                            <div class="pt-4 border-t border-slate-100">
+                                <h5 class="text-slate-500 block text-[9px] uppercase tracking-widest mb-2 font-black">担当範囲</h5>
+                                <p class="text-sm text-slate-700 font-black leading-snug">実環境での動作検証</p>
                             </div>
                         </div>
                     </div>
@@ -347,41 +330,41 @@
 
         <!-- 04: Project Schedule -->
         <section id="schedule" class="relative">
-            <div class="bg-number" data-speed="2.0">04</div>
-            <div class="reveal mb-20">
-                <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter uppercase text-slate-900 font-bold">Schedule.</h2>
-                <p class="text-slate-600 text-[14px] font-black uppercase tracking-[0.4em] font-bold">本番稼働までの工程表</p>
+            <div class="bg-number" data-speed="1.6">04</div>
+            <div class="reveal mb-16">
+                <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase text-slate-900 font-bold">Schedule.</h2>
+                <p class="text-slate-600 text-[11px] font-black uppercase tracking-[0.3em] font-bold">本番稼働までの工程表</p>
             </div>
             
-            <div class="grid grid-cols-1 gap-8">
-                <div class="flex items-center p-14 bg-slate-50 rounded-[3.5rem] reveal stagger-1 border-l-[20px] border-blue-600 shadow-sm" data-speed="0.12">
-                    <div class="w-56 shrink-0">
-                        <div class="font-black text-8xl text-slate-900 leading-none tracking-tighter">04</div>
-                        <div class="text-[16px] font-black text-blue-600 uppercase tracking-widest mt-5 font-bold">April / 4月</div>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="flex items-center p-10 bg-slate-50 rounded-[2.5rem] reveal stagger-1 border-l-[16px] border-blue-600 shadow-sm" data-speed="0.1">
+                    <div class="w-40 shrink-0">
+                        <div class="font-black text-6xl text-slate-900 leading-none tracking-tighter">04</div>
+                        <div class="text-[12px] font-black text-blue-600 uppercase tracking-widest mt-3 font-bold">April / 4月</div>
                     </div>
-                    <div class="flex-1 ml-14 border-l-4 border-gray-200 pl-14">
-                        <h4 class="font-black text-3xl text-slate-900 mb-6 uppercase tracking-tight font-bold">要件定義・現状把握</h4>
-                        <p class="text-xl text-slate-700 font-black tracking-tight">HRMOSデータ分析、就業規則読み込み、マスタ設計書の確定。</p>
-                    </div>
-                </div>
-                <div class="flex items-center p-14 bg-slate-50 rounded-[3.5rem] reveal stagger-2 border-l-[20px] border-blue-400 shadow-sm" data-speed="0.18">
-                    <div class="w-56 shrink-0">
-                        <div class="font-black text-8xl text-slate-900 leading-none tracking-tighter">05</div>
-                        <div class="text-[16px] font-black text-slate-500 uppercase tracking-widest mt-5 font-bold">May / 5月</div>
-                    </div>
-                    <div class="flex-1 ml-14 border-l-4 border-gray-200 pl-14">
-                        <h4 class="font-black text-3xl text-slate-900 mb-6 uppercase tracking-tight font-bold">システム構築・テスト</h4>
-                        <p class="text-xl text-slate-700 font-black tracking-tight">実環境設定反映、有休実績移行、並行稼働テスト検証。</p>
+                    <div class="flex-1 ml-10 border-l-2 border-gray-200 pl-10">
+                        <h4 class="font-black text-2xl text-slate-900 mb-3 uppercase tracking-tight">要件定義・現状把握</h4>
+                        <p class="text-base text-slate-700 font-black tracking-tight">HRMOSデータ分析、就業規則読み込み、マスタ設計書の確定。</p>
                     </div>
                 </div>
-                <div class="flex items-center p-16 bg-blue-600 text-white rounded-[4rem] reveal stagger-3 shadow-2xl shadow-blue-200" data-speed="0.3">
-                    <div class="w-56 shrink-0">
-                        <div class="font-black text-8xl text-white leading-none tracking-tighter">06</div>
-                        <div class="text-[16px] font-black text-blue-200 uppercase tracking-widest mt-5 font-bold">June / 6月</div>
+                <div class="flex items-center p-10 bg-slate-50 rounded-[2.5rem] reveal stagger-2 border-l-[16px] border-blue-400 shadow-sm" data-speed="0.15">
+                    <div class="w-40 shrink-0">
+                        <div class="font-black text-6xl text-slate-900 leading-none tracking-tighter">05</div>
+                        <div class="text-[12px] font-black text-slate-500 uppercase tracking-widest mt-3 font-bold">May / 5月</div>
                     </div>
-                    <div class="flex-1 ml-14 border-l-4 border-blue-400 pl-14">
-                        <h4 class="font-black text-5xl text-white mb-8 uppercase tracking-tight font-bold">本番運用開始</h4>
-                        <p class="text-2xl text-blue-50 font-black">給与システム連携、保守代行フェーズへ完全移行。</p>
+                    <div class="flex-1 ml-10 border-l-2 border-gray-200 pl-10">
+                        <h4 class="font-black text-2xl text-slate-900 mb-3 uppercase tracking-tight">システム構築・テスト</h4>
+                        <p class="text-base text-slate-700 font-black tracking-tight">実環境設定反映、有休実績移行、並行稼働テスト検証。</p>
+                    </div>
+                </div>
+                <div class="flex items-center p-12 bg-blue-600 text-white rounded-[3rem] reveal stagger-3 shadow-2xl shadow-blue-200" data-speed="0.2">
+                    <div class="w-40 shrink-0">
+                        <div class="font-black text-6xl text-white leading-none tracking-tighter">06</div>
+                        <div class="text-[12px] font-black text-blue-200 uppercase tracking-widest mt-3 font-bold">June / 6月</div>
+                    </div>
+                    <div class="flex-1 ml-10 border-l-2 border-blue-400 pl-10">
+                        <h4 class="font-black text-3xl text-white mb-4 uppercase tracking-tight">本番運用開始</h4>
+                        <p class="text-lg text-blue-50 font-black">給与システム連携、保守代行フェーズへ完全移行。</p>
                     </div>
                 </div>
             </div>
@@ -389,34 +372,34 @@
 
         <!-- 05: Status Confirmation -->
         <section id="status" class="relative">
-            <div class="bg-number" data-speed="2.2">05</div>
-            <div class="floating-element top-1/3 right-10" data-speed="3.5"><i data-lucide="shield-check" class="w-32 h-32 text-emerald-100 opacity-90"></i></div>
+            <div class="bg-number" data-speed="1.8">05</div>
+            <div class="floating-element top-1/3 right-10" data-speed="3.0"><i data-lucide="shield-check" class="w-24 h-24 text-emerald-100 opacity-90"></i></div>
             
-            <div class="reveal mb-20">
-                <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter uppercase text-slate-900 font-bold">Status.</h2>
-                <p class="text-slate-600 text-[14px] font-black uppercase tracking-[0.4em] font-bold">現在の進捗状況（クリックで切り替え）</p>
+            <div class="reveal mb-16">
+                <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase text-slate-900 font-bold">Status.</h2>
+                <p class="text-slate-600 text-[11px] font-black uppercase tracking-[0.3em] font-bold">現在の進捗状況（クリックで切り替え）</p>
             </div>
             
-            <div class="agenda-card p-16 reveal shadow-2xl border-t-[16px] border-t-emerald-600">
-                <div class="space-y-16">
-                    <div class="flex items-center justify-between border-b-2 border-gray-100 pb-12 reveal stagger-1">
-                        <div class="flex items-center space-x-12">
-                            <div class="w-24 h-24 bg-blue-50 text-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-inner"><i data-lucide="mail" class="w-12 h-12"></i></div>
-                            <span class="font-black text-3xl text-slate-900">HRMOS勤怠 招待</span>
+            <div class="agenda-card p-12 reveal shadow-2xl border-t-[12px] border-t-emerald-600">
+                <div class="space-y-12">
+                    <div class="flex items-center justify-between border-b-2 border-gray-100 pb-10 reveal stagger-1">
+                        <div class="flex items-center space-x-10">
+                            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner"><i data-lucide="mail" class="w-8 h-8"></i></div>
+                            <span class="font-black text-xl text-slate-900">HRMOS勤怠 招待</span>
                         </div>
                         <div id="status-hrmos" class="status-btn status-IN-PROGRESS hover:scale-105 active:scale-95" onclick="cycleStatus(this, 'action-hrmos')">IN PROGRESS</div>
                     </div>
-                    <div class="flex items-center justify-between border-b-2 border-gray-100 pb-12 reveal stagger-2">
-                        <div class="flex items-center space-x-12">
-                            <div class="w-24 h-24 bg-blue-50 text-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-inner"><i data-lucide="shield" class="w-12 h-12"></i></div>
-                            <span class="font-black text-3xl text-slate-900 font-bold">バクラク勤怠 アカウント発行・権限付与</span>
+                    <div class="flex items-center justify-between border-b-2 border-gray-100 pb-10 reveal stagger-2">
+                        <div class="flex items-center space-x-10">
+                            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner"><i data-lucide="shield" class="w-8 h-8"></i></div>
+                            <span class="font-black text-xl text-slate-900 font-bold">バクラク勤怠 アカウント発行・権限付与</span>
                         </div>
                         <div id="status-bakuraku" class="status-btn status-IN-PROGRESS hover:scale-110 active:scale-95" onclick="cycleStatus(this, 'action-bakuraku')">IN PROGRESS</div>
                     </div>
                     <div class="flex items-center justify-between reveal stagger-3">
-                        <div class="flex items-center space-x-12">
-                            <div class="w-24 h-24 bg-slate-100 text-slate-400 rounded-[2.5rem] flex items-center justify-center shadow-inner"><i data-lucide="file-symlink" class="w-12 h-12"></i></div>
-                            <span class="font-black text-3xl text-slate-900 font-bold">就業規則のデータ共有</span>
+                        <div class="flex items-center space-x-10">
+                            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center shadow-inner"><i data-lucide="file-symlink" class="w-8 h-8"></i></div>
+                            <span class="font-black text-xl text-slate-900 font-bold">就業規則のデータ共有</span>
                         </div>
                         <div id="status-rule" class="status-btn status-NOT-STARTED hover:scale-110 active:scale-95" onclick="cycleStatus(this, 'action-rule')">NOT STARTED</div>
                     </div>
@@ -426,49 +409,49 @@
 
         <!-- 06: Next Action -->
         <section id="next" class="relative">
-            <div class="bg-number" data-speed="1.0">06</div>
-            <div class="reveal mb-20">
-                <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter uppercase text-slate-900 font-bold">Next Action.</h2>
-                <p class="text-slate-600 text-[14px] font-black uppercase tracking-[0.4em] font-bold">次回定例までのアクション項目</p>
+            <div class="bg-number" data-speed="0.8">06</div>
+            <div class="reveal mb-16">
+                <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase text-slate-900 font-bold">Next Action.</h2>
+                <p class="text-slate-600 text-[11px] font-black uppercase tracking-[0.3em] font-bold">次回定例までのアクション項目</p>
             </div>
             
-            <div class="grid md:grid-cols-2 gap-12 items-start">
+            <div class="grid md:grid-cols-2 gap-10 items-start">
                 <!-- Cocone Actions -->
-                <div class="agenda-card p-14 reveal stagger-1 border-blue-200 bg-blue-50/20 shadow-xl">
-                    <div class="flex items-center space-x-6 mb-16">
-                        <span class="w-8 h-8 bg-blue-600 rounded-full shadow-2xl shadow-blue-400"></span>
-                        <h4 class="font-black text-xl text-blue-600 uppercase tracking-[0.4em] font-bold">Cocone Actions</h4>
+                <div class="agenda-card p-10 reveal stagger-1 border-blue-200 bg-blue-50/20 shadow-xl">
+                    <div class="flex items-center space-x-5 mb-12">
+                        <span class="w-6 h-6 bg-blue-600 rounded-full shadow-lg shadow-blue-300"></span>
+                        <h4 class="font-black text-lg text-blue-600 uppercase tracking-[0.3em] font-bold">Cocone Actions</h4>
                     </div>
-                    <ul class="space-y-12 text-xl font-black text-slate-900" id="cocone-action-list">
+                    <ul class="space-y-10 text-base font-black text-slate-900" id="cocone-action-list">
                         <li class="action-item flex items-start" id="action-hrmos">
-                            <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center mr-8 shrink-0 shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>
+                            <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center mr-6 shrink-0 shadow-md"><i data-lucide="check" class="w-4 h-4 text-white"></i></div>
                             <span>HRMOS勤怠 招待</span>
                         </li>
                         <li class="action-item flex items-start" id="action-bakuraku">
-                            <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center mr-8 shrink-0 shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>
+                            <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center mr-6 shrink-0 shadow-md"><i data-lucide="check" class="w-4 h-4 text-white"></i></div>
                             <span>バクラク勤怠 アカウント発行・権限付与</span>
                         </li>
                         <li class="action-item flex items-start" id="action-rule">
-                            <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center mr-8 shrink-0 shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>
+                            <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center mr-6 shrink-0 shadow-md"><i data-lucide="check" class="w-4 h-4 text-white"></i></div>
                             <span>就業規則のデータ共有</span>
                         </li>
                         <li class="flex items-start">
-                            <div class="w-9 h-9 bg-slate-900 rounded-full flex items-center justify-center mr-8 shrink-0 shadow-lg"><i data-lucide="calendar" class="w-5 h-5 text-white"></i></div>
+                            <div class="w-7 h-7 bg-slate-900 rounded-full flex items-center justify-center mr-6 shrink-0 shadow-md"><i data-lucide="calendar" class="w-4 h-4 text-white"></i></div>
                             <span>定例ミーティングへのご参加</span>
                         </li>
                     </ul>
                 </div>
                 <!-- BPIO Actions -->
-                <div class="agenda-card p-14 bg-slate-900 text-white border-slate-800 reveal stagger-2 shadow-2xl">
-                    <div class="flex items-center space-x-6 mb-16">
-                        <span class="w-8 h-8 bg-emerald-400 rounded-full shadow-2xl shadow-emerald-400"></span>
-                        <h4 class="font-black text-xl text-emerald-400 uppercase tracking-[0.4em] font-bold">BPIO Actions</h4>
+                <div class="agenda-card p-10 bg-slate-900 text-white border-slate-800 reveal stagger-2 shadow-2xl">
+                    <div class="flex items-center space-x-5 mb-12">
+                        <span class="w-6 h-6 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400"></span>
+                        <h4 class="font-black text-lg text-emerald-400 uppercase tracking-[0.3em] font-bold">BPIO Actions</h4>
                     </div>
-                    <ul class="space-y-12 text-xl font-black">
-                        <li class="flex items-start"><div class="w-9 h-9 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center mr-8 shrink-0 border border-emerald-500/30 shadow-sm"><i data-lucide="key" class="w-5 h-5"></i></div><span>各システムへのログイン・状況確認</span></li>
-                        <li class="flex items-start"><div class="w-9 h-9 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center mr-8 shrink-0 border border-emerald-500/30 shadow-sm"><i data-lucide="file-search" class="w-5 h-5"></i></div><span>受領済データのマッピング精査・初期分析</span></li>
-                        <li class="flex items-start"><div class="w-9 h-9 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center mr-8 shrink-0 border border-emerald-500/30 shadow-sm"><i data-lucide="clipboard-list" class="w-5 h-5"></i></div><span>初期ヒアリングシートの作成と提示</span></li>
-                        <li class="flex items-start"><div class="w-9 h-9 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center mr-8 shrink-0 border border-emerald-500/30 shadow-sm"><i data-lucide="pencil-ruler" class="w-5 h-5"></i></div><span>要件定義・設計</span></li>
+                    <ul class="space-y-10 text-base font-black">
+                        <li class="flex items-start"><div class="w-7 h-7 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mr-6 shrink-0 border border-emerald-500/30"><i data-lucide="key" class="w-4 h-4"></i></div><span>各システムへのログイン・状況確認</span></li>
+                        <li class="flex items-start"><div class="w-7 h-7 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mr-6 shrink-0 border border-emerald-500/30"><i data-lucide="file-search" class="w-4 h-4"></i></div><span>受領済データのマッピング精査・初期分析</span></li>
+                        <li class="flex items-start"><div class="w-7 h-7 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mr-6 shrink-0 border border-emerald-500/30"><i data-lucide="clipboard-list" class="w-4 h-4"></i></div><span>初期ヒアリングシートの作成と提示</span></li>
+                        <li class="flex items-start"><div class="w-7 h-7 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mr-6 shrink-0 border border-emerald-500/30"><i data-lucide="pencil-ruler" class="w-4 h-4"></i></div><span>要件定義・設計</span></li>
                     </ul>
                 </div>
             </div>
@@ -476,8 +459,8 @@
 
     </main>
 
-    <footer class="bg-white py-32 text-center border-t border-gray-100">
-        <div class="text-[14px] text-slate-400 font-black uppercase tracking-[2em]">©2026 BPIO inc. ALL RIGHTS RESERVED.</div>
+    <footer class="bg-white py-24 text-center border-t border-gray-100">
+        <div class="text-[12px] text-slate-400 font-black uppercase tracking-[1.5em]">©2026 BPIO inc. ALL RIGHTS RESERVED.</div>
     </footer>
 
     <script>
@@ -499,7 +482,6 @@
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
                 
-                // 背景巨大数字のパララックス
                 const speed = parseFloat(section.querySelector('.bg-number')?.getAttribute('data-speed') || 0);
                 const offset = (scrollPos - sectionTop) * speed;
                 
@@ -507,7 +489,6 @@
                     section.querySelector('.bg-number').style.transform = `translateY(calc(-50% + ${offset * 0.4}px)) translateX(${-offset * 0.15}px)`;
                 }
 
-                // カード自体の微細なパララックス & 傾斜
                 const card = section.querySelector('.agenda-card');
                 if (card) {
                     const rotate = (scrollPos - sectionTop) * 0.003;
@@ -520,11 +501,10 @@
                 }
             });
 
-            // フローティング要素のパララックス
             floatingElements.forEach(el => {
                 const speed = parseFloat(el.getAttribute('data-speed'));
-                const movement = scrollPos * speed * 0.3;
-                el.style.transform = `translateY(${movement}px) rotate(${scrollPos * 0.05}deg)`;
+                const movement = scrollPos * speed * 0.25;
+                el.style.transform = `translateY(${movement}px) rotate(${scrollPos * 0.04}deg)`;
             });
 
             navPills.forEach(pill => {

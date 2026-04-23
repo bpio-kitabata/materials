@@ -18,14 +18,18 @@
             color: #333;
             overflow-x: hidden;
         }
+        
+        /* 1段目：カテゴリーナビ (Sticky) */
         .sticky-nav {
             position: sticky;
             top: 0;
-            z-index: 50;
-            background-color: rgba(253, 251, 247, 0.9);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px border-gray-200;
+            z-index: 100;
+            background-color: rgba(253, 251, 247, 0.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            height: 54px;
         }
+        
         .nav-item {
             position: relative;
             padding: 1rem 0.75rem;
@@ -34,9 +38,11 @@
             color: #666;
             transition: all 0.3s ease;
             white-space: nowrap;
+            cursor: pointer;
         }
         .nav-item.active {
             color: #1a73e8;
+            font-weight: 700;
         }
         .nav-item.active::after {
             content: '';
@@ -48,18 +54,42 @@
             background-color: #1a73e8;
             border-radius: 3px 3px 0 0;
         }
+        
+        /* 2段目：テーブルヘッダー (指示箇所の固定) */
+        .sticky-thead {
+            position: sticky;
+            top: 54px; /* sticky-navの高さ分 */
+            z-index: 90;
+            background-color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 吸着した時のスタイル変化 */
+        .sticky-thead.stuck {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
         .table-container {
             max-width: 1000px;
             margin: 1rem auto 2rem auto;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: visible; /* stickyを効かせるため */
         }
+        
+        table {
+            border-spacing: 0;
+            width: 100%;
+        }
+
         .category-row {
             background-color: #f4f1eb;
-            scroll-margin-top: 120px; /* Adjust for sticky nav */
+            /* スクロール位置調整（ナビ+ヘッダーの高さ分） */
+            scroll-margin-top: 130px; 
         }
+        
         .status-icon {
             display: inline-flex;
             align-items: center;
@@ -67,6 +97,7 @@
             margin-right: 0.5rem;
             vertical-align: middle;
         }
+        
         .badge {
             display: inline-block;
             padding: 2px 12px;
@@ -75,43 +106,41 @@
             font-weight: 500;
         }
 
-        /* Scroll Animation Styles */
+        /* 項目セルのスタイル */
+        .item-label {
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* アニメーション */
         .reveal {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Custom Scrollbar for Nav on Mobile */
-        .nav-scroll::-webkit-scrollbar {
-            display: none;
-        }
-        .nav-scroll {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .nav-scroll::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-12">
 
-    <!-- Header Section -->
+    <!-- タイトルエリア -->
     <header class="p-6 md:p-10 max-w-[1000px] mx-auto reveal">
         <h1 class="text-3xl font-bold mb-2">給与システム移行　機能比較</h1>
-        <p class="text-gray-600 mb-6">MFクラウド給与 → SmartHR給与計算</p>
-        
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2 mt-4">
             <span class="badge bg-[#eef6ff] text-[#1a73e8] border border-[#d2e3fc]">101名（給与導入時200名）</span>
             <span class="badge bg-[#f0f9f1] text-[#1e8e3e] border border-[#ceead6]">タレントマネジメントプラン契約済</span>
             <span class="badge bg-[#fff4e5] text-[#b25b00] border border-[#ffe1ba]">SmartHR給与計算：2025年6月提供開始</span>
         </div>
     </header>
 
-    <!-- Sticky Navigation Bar -->
-    <nav class="sticky-nav shadow-sm mb-4">
+    <!-- 1段目ナビゲーション -->
+    <nav id="navbar" class="sticky-nav">
         <div class="max-w-[1000px] mx-auto px-4 overflow-x-auto nav-scroll">
             <div class="flex space-x-6">
                 <a href="#section-basic" class="nav-item active" data-target="section-basic">基本給与計算</a>
@@ -123,188 +152,164 @@
         </div>
     </nav>
 
-    <div class="table-container shadow-xl">
-        <table class="w-full border-collapse">
-            <thead class="sticky top-[53px] z-10 bg-white">
-                <tr class="text-left border-b">
-                    <th class="p-4 w-1/3 text-gray-500 font-bold text-xs uppercase tracking-wider bg-white">比較項目</th>
-                    <th class="p-4 w-1/3 bg-white">
-                        <span class="badge bg-[#eef6ff] text-[#1a73e8] px-4 py-1 text-sm font-bold">MFクラウド給与</span>
+    <div class="table-container">
+        <table>
+            <!-- 2段目ヘッダー（画像 image_b6f9fc.png の部分） -->
+            <thead id="table-header" class="sticky-thead">
+                <tr class="text-left bg-white">
+                    <th class="p-5 w-1/3 item-label">比較項目</th>
+                    <th class="p-5 w-1/3 text-center md:text-left">
+                        <span class="badge bg-[#eef6ff] text-[#1a73e8] px-4 py-1.5 text-sm font-bold shadow-sm">MFクラウド給与</span>
                     </th>
-                    <th class="p-4 w-1/3 bg-white">
-                        <span class="badge bg-[#f0f9f1] text-[#1e8e3e] px-4 py-1 text-sm font-bold">SmartHR給与計算</span>
+                    <th class="p-5 w-1/3 text-center md:text-left">
+                        <span class="badge bg-[#f0f9f1] text-[#1e8e3e] px-4 py-1.5 text-sm font-bold shadow-sm">SmartHR給与計算</span>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Section: 基本給与計算 -->
+                <!-- セクション：基本給与計算 -->
                 <tr id="section-basic" class="category-row reveal">
                     <td colspan="3" class="p-4 font-bold text-gray-800">■ 基本給与計算</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">月給・日給・時給対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>3形態対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>3形態対応</td>
+                    <td class="p-5 text-sm font-medium">月給・日給・時給対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>3形態対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>3形態対応</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">複数事業所対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm font-medium">複数事業所対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">カスタム計算式</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>柔軟なカスタマイズ</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>四則演算・条件分岐対応</td>
+                    <td class="p-5 text-sm font-medium">カスタム計算式</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>柔軟なカスタマイズ</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>四則演算・条件分岐対応</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">前月比較チェック</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm font-medium">前月比較チェック</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium align-top">社会保険料・所得税・住民税の計算</td>
-                    <td class="p-4 text-sm">
-                        <div class="flex items-start">
-                            <span class="status-icon text-emerald-600 mt-1">●</span>
-                            <div>
-                                <span class="font-medium">自動計算</span><br>
-                                <span class="text-[10px] text-gray-500">料率は法改正時に自動更新</span>
-                            </div>
-                        </div>
+                    <td class="p-5 text-sm font-medium align-top">社会保険料・所得税・住民税の計算</td>
+                    <td class="p-5 text-sm leading-relaxed">
+                        <span class="status-icon text-emerald-600">●</span><span class="font-medium">自動計算</span><br>
+                        <span class="text-[10px] text-gray-500 ml-6">料率は法改正時に自動更新</span>
                     </td>
-                    <td class="p-4 text-sm">
-                        <div class="flex items-start">
-                            <span class="status-icon text-orange-500 mt-1">▲</span>
-                            <div>
-                                <span class="font-medium">自動計算</span><br>
-                                <span class="text-[10px] text-gray-500 font-bold">料率は手動設定・更新が必要</span>
-                            </div>
-                        </div>
+                    <td class="p-5 text-sm leading-relaxed">
+                        <span class="status-icon text-orange-500">▲</span><span class="font-medium">自動計算</span><br>
+                        <span class="text-[10px] text-gray-500 font-bold ml-6">料率は手動設定・更新が必要</span>
                     </td>
                 </tr>
 
-                <!-- Section: 給与明細・各種書類 -->
+                <!-- セクション：給与明細・各種書類 -->
                 <tr id="section-docs" class="category-row reveal">
                     <td colspan="3" class="p-4 font-bold text-gray-800">■ 給与明細・各種書類</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">Web給与明細発行</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm font-medium">Web給与明細発行</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">源泉徴収票・給与支払報告書</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm font-medium">源泉徴収票・給与支払報告書</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">年末調整との連携</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>MF年末調整と連携</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>SmartHR年末調整と自動連携</td>
+                    <td class="p-5 text-sm font-medium">年末調整との連携</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>MF年末調整と連携</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>SmartHR年末調整と自動連携</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">社会保険書類（月変・算定等）の作成</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm font-medium">社会保険書類の作成</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
                 </tr>
 
-                <!-- Section: 給与振込 -->
+                <!-- セクション：給与振込 -->
                 <tr id="section-transfer" class="category-row reveal">
                     <td colspan="3" class="p-4 font-bold text-gray-800">■ 給与振込</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">FBデータ出力</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-gray-400">要確認</span></td>
+                    <td class="p-5 text-sm font-medium">FBデータ出力</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-gray-400 font-bold">要確認</span></td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">銀行API連携（ワンクリック振込）</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>三井住友・みずほ対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-red-500">✕</span>現時点では非対応</td>
+                    <td class="p-5 text-sm font-medium">銀行API連携</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>三井住友・みずほ対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-red-500 font-bold">✕</span>現時点では非対応</td>
                 </tr>
 
-                <!-- Section: 外部連携 -->
+                <!-- セクション：外部連携 -->
                 <tr id="section-integration" class="category-row reveal">
                     <td colspan="3" class="p-4 font-bold text-gray-800">■ 外部連携</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">勤怠システム連携</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>15種以上</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-orange-500">▲</span>SmartHR勤怠が主（他社は要確認）</td>
+                    <td class="p-5 text-sm font-medium">勤怠システム連携</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>15種以上</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-orange-500">▲</span>SmartHR勤怠が主</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">会計ソフト連携</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>MF会計ほか対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-gray-400">要確認</span></td>
-                </tr>
-                <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">人事評価x給与シミュレーション</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-red-500">✕</span>非対応</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応（2025年11月〜）</td>
+                    <td class="p-5 text-sm font-medium">人事評価連携</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-red-500">✕</span>非対応</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>対応（2025年11月〜）</td>
                 </tr>
 
-                <!-- Section: 導入・サポート -->
+                <!-- セクション：導入・サポート -->
                 <tr id="section-support" class="category-row reveal">
                     <td colspan="3" class="p-4 font-bold text-gray-800">■ 導入・サポート</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">導入支援サービス</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>訪問型支援あり</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>TECO Design社提携（有償）</td>
+                    <td class="p-5 text-sm font-medium">導入支援サービス</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>訪問型支援あり</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>TECO Design社提携</td>
                 </tr>
                 <tr class="border-b reveal">
-                    <td class="p-4 text-sm font-medium">機能成熟度・導入実績</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>長期実績あり</td>
-                    <td class="p-4 text-sm"><span class="status-icon text-orange-500">▲</span>2025年6月提供開始</td>
+                    <td class="p-5 text-sm font-medium">機能成熟度・実績</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-emerald-600">●</span>長期実績あり</td>
+                    <td class="p-5 text-sm"><span class="status-icon text-orange-500">▲</span>2025年6月提供開始</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- 警告ボックス -->
-    <div class="max-w-[1000px] mx-auto p-6 bg-[#fff9f0] border-l-4 border-orange-400 rounded-r-lg reveal">
-        <div class="flex items-start mb-2">
-            <span class="mr-2 text-lg">⚠</span>
-            <h3 class="font-bold text-gray-900 text-lg">SmartHR給与計算で対応できない点（限定的）</h3>
-        </div>
+    <!-- 警告エリア -->
+    <div class="max-w-[1000px] mx-auto p-6 bg-[#fffcf5] border-l-4 border-orange-400 rounded-r-lg reveal">
+        <h3 class="font-bold text-gray-900 text-lg mb-3 flex items-center">
+            <span class="text-xl mr-2">⚠</span>SmartHR給与計算で対応できない点（限定的）
+        </h3>
         <ul class="list-disc list-inside space-y-3 text-sm text-gray-800 ml-6">
-            <li><span class="font-bold">社会保険料率等の自動更新なし</span>：法改正時は担当者が手動で料率を更新する運用が必要</li>
-            <li><span class="font-bold">銀行API連携（ワンクリック振込）</span>：現時点では非対応。FBデータ出力の可否は要確認</li>
+            <li><span class="font-bold">社会保険料率等の自動更新なし</span>：法改正時は手動更新が必要</li>
+            <li><span class="font-bold">銀行API連携</span>：現時点では非対応。FBデータは要確認</li>
         </ul>
     </div>
 
-    <div class="max-w-[1000px] mx-auto mt-12 text-gray-400 text-sm reveal px-4">
-        構成の考え方をお伝えします。
-    </div>
-
     <script>
-        // --- Scroll Reveal Animation ---
-        const revealOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, revealOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-        // --- Scrollspy Logic ---
+        const tableHeader = document.getElementById('table-header');
         const navItems = document.querySelectorAll('.nav-item');
         const sections = document.querySelectorAll('.category-row');
 
+        // スクロール検知
         window.addEventListener('scroll', () => {
-            let current = '';
+            const scrollY = window.pageYOffset;
             
+            // ヘッダーの吸着（Stuck）判定
+            // tableHeaderの親コンテナの上端からの位置をチェック
+            const rect = tableHeader.getBoundingClientRect();
+            if (rect.top <= 55) { 
+                tableHeader.classList.add('stuck');
+            } else {
+                tableHeader.classList.remove('stuck');
+            }
+
+            // スクロールスパイ
+            let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
-                // Offset calculation (nav height + a little extra)
-                if (pageYOffset >= sectionTop - 150) {
+                if (scrollY >= sectionTop - 140) {
                     current = section.getAttribute('id');
                 }
             });
@@ -313,14 +318,18 @@
                 item.classList.remove('active');
                 if (item.getAttribute('data-target') === current) {
                     item.classList.add('active');
-                    // Horizontal scroll sync for mobile nav
-                    item.parentElement.parentElement.scrollTo({
-                        left: item.offsetLeft - 20,
-                        behavior: 'smooth'
-                    });
                 }
             });
         });
+
+        // アニメーション用
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     </script>
 
 </body>

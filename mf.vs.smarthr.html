@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>給与システム移行 機能比較</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #fdfbf7;
+            color: #333;
+        }
+        .table-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .category-row {
+            background-color: #f4f1eb;
+        }
+        .status-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-width-[1000px] mx-auto mb-6">
+        <h1 class="text-2xl font-bold mb-1">給与システム移行　機能比較</h1>
+        <p class="text-gray-600 mb-4">MFクラウド給与 → SmartHR給与計算</p>
+        
+        <div class="flex flex-wrap gap-2 mb-8">
+            <span class="badge bg-[#eef6ff] text-[#1a73e8] border border-[#d2e3fc]">101名（給与導入時200名）</span>
+            <span class="badge bg-[#f0f9f1] text-[#1e8e3e] border border-[#ceead6]">タレントマネジメントプラン契約済</span>
+            <span class="badge bg-[#fff4e5] text-[#b25b00] border border-[#ffe1ba]">SmartHR給与計算：2025年6月提供開始</span>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="text-left">
+                    <th class="p-4 bg-white border-b w-1/3 text-gray-700 font-bold">比較項目</th>
+                    <th class="p-4 bg-white border-b w-1/3">
+                        <span class="badge bg-[#eef6ff] text-[#1a73e8] px-4 py-1 text-sm font-bold">MFクラウド給与</span>
+                    </th>
+                    <th class="p-4 bg-white border-b w-1/3">
+                        <span class="badge bg-[#f0f9f1] text-[#1e8e3e] px-4 py-1 text-sm font-bold">SmartHR給与計算</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 基本給与計算 -->
+                <tr class="category-row">
+                    <td colspan="3" class="p-3 font-bold text-gray-800">■ 基本給与計算</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">月給・日給・時給対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>3形態対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>3形態対応</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">複数事業所対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">カスタム計算式</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>柔軟なカスタマイズ</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>四則演算・条件分岐対応</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">前月比較チェック</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium align-top">社会保険料・所得税・住民税の計算</td>
+                    <td class="p-4 text-sm">
+                        <div class="flex items-start">
+                            <span class="status-icon text-emerald-600 mt-1">●</span>
+                            <div>
+                                <span class="font-medium">自動計算</span><br>
+                                <span class="text-[10px] text-gray-500">料率は法改正時に自動更新</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-sm">
+                        <div class="flex items-start">
+                            <span class="status-icon text-orange-500 mt-1">▲</span>
+                            <div>
+                                <span class="font-medium">自動計算</span><br>
+                                <span class="text-[10px] text-gray-500 font-bold">料率は手動設定・更新が必要</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- 給与明細・各種書類 -->
+                <tr class="category-row">
+                    <td colspan="3" class="p-3 font-bold text-gray-800">■ 給与明細・各種書類</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">Web給与明細発行</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">源泉徴収票・給与支払報告書</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">年末調整との連携</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>MF年末調整と連携</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>SmartHR年末調整と自動連携</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">社会保険書類（月変・算定等）の作成</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                </tr>
+
+                <!-- 給与振込 -->
+                <tr class="category-row">
+                    <td colspan="3" class="p-3 font-bold text-gray-800">■ 給与振込</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">FBデータ出力</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-gray-400">要確認</span></td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">銀行API連携（ワンクリック振込）</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>三井住友・みずほ対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-red-500">✕</span>現時点では非対応</td>
+                </tr>
+
+                <!-- 外部連携 -->
+                <tr class="category-row">
+                    <td colspan="3" class="p-3 font-bold text-gray-800">■ 外部連携</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">勤怠システム連携</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>15種以上</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-orange-500">▲</span>SmartHR勤怠が主（他社は要確認）</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">会計ソフト連携</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>MF会計ほか対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-gray-400">要確認</span></td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">人事評価x給与シミュレーション</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-red-500">✕</span>非対応</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>対応（2025年11月〜）</td>
+                </tr>
+
+                <!-- 導入・サポート -->
+                <tr class="category-row">
+                    <td colspan="3" class="p-3 font-bold text-gray-800">■ 導入・サポート</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">導入支援サービス</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>訪問型支援あり</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>TECO Design社提携（有償）</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-4 text-sm font-medium">機能成熟度・導入実績</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-emerald-600">●</span>長期実績あり</td>
+                    <td class="p-4 text-sm"><span class="status-icon text-orange-500">▲</span>2025年6月提供開始</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 警告ボックス -->
+    <div class="max-width-[1000px] mx-auto mt-6 p-6 bg-[#fff9f0] border-l-4 border-orange-400 rounded-r-lg">
+        <div class="flex items-start mb-2">
+            <span class="mr-2 text-lg">⚠</span>
+            <h3 class="font-bold text-gray-900">SmartHR給与計算で対応できない点（限定的）</h3>
+        </div>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-800 ml-6">
+            <li><span class="font-bold">社会保険料率等の自動更新なし</span>：法改正時は担当者が手動で料率を更新する運用が必要</li>
+            <li><span class="font-bold">銀行API連携（ワンクリック振込）</span>：現時点では非対応。FBデータ出力の可否は要確認</li>
+        </ul>
+    </div>
+
+    <div class="max-width-[1000px] mx-auto mt-8 text-gray-500 text-sm">
+        構成の考え方をお伝えします。
+    </div>
+
+</body>
+</html>

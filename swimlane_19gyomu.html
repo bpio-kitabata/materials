@@ -1,446 +1,635 @@
 
 <style>
-  * { box-sizing: border-box; }
-  .sw-wrap { padding: 1rem 0; font-size: 12px; overflow-x: auto; }
-  .sw-table { border-collapse: collapse; min-width: 680px; width: 100%; }
-  .sw-table th, .sw-table td { border: 0.5px solid var(--color-border-secondary); }
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-size:12px;color:var(--color-text-primary);overflow-x:auto}
 
-  .col-gyomu { width: 18%; }
-  .col-kumamoto { width: 27%; }
-  .col-nts { width: 27%; }
-  .col-ihibs { width: 27%; }
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 0 8px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:14px;position:sticky;top:0;background:var(--color-background-primary);z-index:20}
+.nb{padding:5px 13px;border-radius:99px;border:0.5px solid var(--color-border-secondary);font-size:11px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .15s}
+.nb:hover{background:var(--color-background-secondary)}
+.nb.a.on{background:#185FA5;color:#fff;border-color:#185FA5}
+.nb.b.on{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.nb.c.on{background:#854F0B;color:#fff;border-color:#854F0B}
 
-  .header-row th { padding: 8px 10px; text-align: center; font-weight: 500; font-size: 13px; color: var(--color-text-primary); }
-  .header-kumamoto { background: #E6F1FB; color: #0C447C !important; }
-  .header-nts { background: #E1F5EE; color: #085041 !important; }
-  .header-ihibs { background: #FAEEDA; color: #633806 !important; }
-  .header-gyomu { background: var(--color-background-secondary); }
+.sec{margin-bottom:24px}
+.sec-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;margin-bottom:10px}
+.sec-hdr.a{background:#E6F1FB;border-left:3px solid #185FA5}
+.sec-hdr.b{background:#E1F5EE;border-left:3px solid #0F6E56}
+.sec-hdr.c{background:#FAEEDA;border-left:3px solid #854F0B}
+.sec-ttl{font-size:12px;font-weight:500}
+.sec-ttl.a{color:#0C447C}.sec-ttl.b{color:#085041}.sec-ttl.c{color:#633806}
+.sec-badge{font-size:10px;padding:2px 7px;border-radius:99px}
+.sec-badge.a{background:#B5D4F4;color:#0C447C}
+.sec-badge.b{background:#9FE1CB;color:#085041}
+.sec-badge.c{background:#FAC775;color:#633806}
 
-  .section-row td { padding: 5px 10px; font-weight: 500; font-size: 11px; color: var(--color-text-secondary); background: var(--color-background-secondary); letter-spacing: .04em; }
+.tbl{width:100%;min-width:700px;border-collapse:collapse}
+.tbl th{padding:7px 10px;font-size:11px;font-weight:500;text-align:center;border:0.5px solid var(--color-border-secondary)}
+.th-g{background:var(--color-background-secondary);color:var(--color-text-secondary);width:110px}
+.th-k{background:#185FA5;color:#fff}
+.th-ar{background:var(--color-background-tertiary);width:28px}
+.th-n{background:#0F6E56;color:#fff}
+.th-ar2{background:var(--color-background-tertiary);width:28px}
+.th-i{background:#854F0B;color:#fff}
 
-  .gyomu-cell { padding: 0 !important; vertical-align: top; }
-  .gyomu-inner { padding: 8px 10px; height: 100%; }
-  .gyomu-no { font-size: 10px; color: var(--color-text-tertiary); margin-bottom: 2px; }
-  .gyomu-name { font-weight: 500; font-size: 12px; color: var(--color-text-primary); line-height: 1.4; }
-  .gyomu-freq { font-size: 10px; color: var(--color-text-secondary); margin-top: 3px; }
+.tbl td{border:0.5px solid var(--color-border-secondary);vertical-align:top;padding:0}
 
-  .lane-cell { padding: 8px 10px; vertical-align: top; }
-  .lane-cell.nts-col { background: rgba(225,245,238,0.15); }
-  .lane-cell.ihibs-col { background: rgba(250,238,218,0.15); }
+.g-cell{background:var(--color-background-secondary);padding:10px 10px;vertical-align:top}
+.g-no{font-size:10px;color:var(--color-text-tertiary);margin-bottom:2px}
+.g-name{font-size:11px;font-weight:500;color:var(--color-text-primary);line-height:1.4;margin-bottom:4px}
+.g-freq{display:inline-block;font-size:10px;padding:1px 6px;border-radius:99px;background:var(--color-background-tertiary);color:var(--color-text-secondary)}
 
-  .step-box { border-radius: 6px; padding: 5px 8px; margin-bottom: 5px; font-size: 11px; line-height: 1.4; display: flex; gap: 6px; align-items: flex-start; }
-  .step-k { background: #E6F1FB; color: #0C447C; border: 0.5px solid #B5D4F4; }
-  .step-n { background: #E1F5EE; color: #085041; border: 0.5px solid #9FE1CB; }
-  .step-i { background: #FAEEDA; color: #633806; border: 0.5px solid #FAC775; }
-  .step-num { font-weight: 500; font-size: 10px; flex-shrink: 0; opacity: 0.7; }
-  .step-text { flex: 1; }
-  .tool-tag { display: inline-block; font-size: 10px; padding: 1px 4px; border-radius: 3px; background: rgba(0,0,0,0.06); margin-top: 2px; color: inherit; opacity: 0.8; }
-  .arrow-down { text-align: center; font-size: 10px; color: var(--color-text-tertiary); margin: 2px 0; line-height: 1; }
-  .arrow-send { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--color-text-tertiary); margin: 3px 0; }
-  .arrow-send::before { content: "→"; }
+.k-cell{background:#F0F7FF;padding:8px 8px}
+.n-cell{background:#F0FBF5;padding:8px 8px}
+.i-cell{background:#FFFBF0;padding:8px 8px}
+.ar-cell{background:var(--color-background-tertiary);padding:4px 0;text-align:center;vertical-align:middle}
+
+.task{border-radius:6px;padding:7px 9px;margin-bottom:0;border:0.5px solid}
+.task.k{background:#fff;border-color:#B5D4F4}
+.task.n{background:#fff;border-color:#9FE1CB}
+.task.i{background:#fff;border-color:#FAC775}
+.task-num{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:500;margin-right:5px;flex-shrink:0;vertical-align:middle}
+.task-num.k{background:#B5D4F4;color:#0C447C}
+.task-num.n{background:#9FE1CB;color:#085041}
+.task-num.i{background:#FAC775;color:#633806}
+.task-txt{font-size:11px;color:var(--color-text-primary);line-height:1.45;display:inline}
+.tool{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-top:4px;margin-right:2px}
+.tool.k{background:#DBEAFE;color:#1D4ED8}
+.tool.n{background:#DCFCE7;color:#166534}
+.tool.i{background:#FEF9C3;color:#854D0E}
+
+.vconn{display:flex;align-items:center;justify-content:center;padding:3px 0;color:var(--color-text-tertiary);font-size:13px}
+.vconn.k{color:#185FA5}
+.vconn.n{color:#0F6E56}
+.vconn.i{color:#854F0B}
+
+.har{display:flex;align-items:center;justify-content:center;height:100%;color:var(--color-text-tertiary);font-size:15px;padding:4px}
+.har.kn{color:#185FA5}
+.har.ni{color:#0F6E56}
+.har.nk{color:#0F6E56}
+.har.ik{color:#854F0B}
+.har.in{color:#854F0B}
+
+.empty-cell{background:var(--color-background-tertiary)}
 </style>
 
-<div class="sw-wrap">
-<table class="sw-table">
-  <thead>
-    <tr class="header-row">
-      <th class="col-gyomu header-gyomu">業務</th>
-      <th class="col-kumamoto header-kumamoto">熊本BPO（業務統括室）</th>
-      <th class="col-nts header-nts">NTS担当者</th>
-      <th class="col-ihibs header-ihibs">IHIBS担当者</th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="root">
+<nav class="nav" id="nav">
+  <button class="nb a on" onclick="scrollSec('sa')">従業員情報管理</button>
+  <button class="nb b" onclick="scrollSec('sb')">勤怠・給与計算</button>
+  <button class="nb c" onclick="scrollSec('sc')">有期雇用管理</button>
+</nav>
 
-    <tr><td colspan="4" class="section-row"><td>■ 従業員情報管理サービス</td></td></tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">①</div><div class="gyomu-name">入社登録</div><div class="gyomu-freq">随時</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">資料受領<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">書類確認・フォルダ移動<br><span class="tool-tag">共有フォルダ</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">チェックリスト準備<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">NET-J 従業員情報登録<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">5</span><div class="step-text">完了連絡<br><span class="tool-tag">メール</span> → NTS</div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">入社資料一式を送付<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">完了報告を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
-    </tr>
+<div id="sa" class="sec">
+  <div class="sec-hdr a"><span class="sec-ttl a">従業員情報管理サービス</span><span class="sec-badge a">① 〜 ⑤</span></div>
+  <table class="tbl">
+    <thead><tr>
+      <th class="th-g">業務</th>
+      <th class="th-k">熊本BPO</th>
+      <th class="th-ar"></th>
+      <th class="th-n">NTS担当者</th>
+      <th class="th-ar2"></th>
+      <th class="th-i">IHIBS担当者</th>
+    </tr></thead>
+    <tbody>
 
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">②</div><div class="gyomu-name">退職登録</div><div class="gyomu-freq">随時</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">退職届受領<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">NET-J 退職情報登録<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">完了連絡 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">退職届・情報を送付<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">完了報告を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
+      <td class="g-cell" rowspan="9"><div class="g-no">①</div><div class="g-name">入社登録</div><span class="g-freq">随時</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">資料受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">入社資料一式を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td>
+      <td class="i-cell empty-cell"></td>
     </tr>
-
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">③</div><div class="gyomu-name">正社員登用</div><div class="gyomu-freq">随時</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">登用資料受領<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">NET-J 雇用形態変更登録<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">完了連絡 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">登用の連絡・資料を送付<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">完了報告を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">書類確認・フォルダ移動</span><br><span class="tool k">共有フォルダ</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">チェックリスト準備</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">NET-J 従業員情報登録</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell" style="vertical-align:middle"></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">完了連絡</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">完了報告を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
 
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">④</div><div class="gyomu-name">組織改訂</div><div class="gyomu-freq">随時（主に年度末）</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">組織改訂資料受領<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">組織変更データ作成<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">データ送付 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">取込結果受領・確認<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">5</span><div class="step-text">NTSへ確認依頼 → NTS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">6</span><div class="step-text">所属変更データ作成・送付 → IHIBS<br><span class="tool-tag">Excel</span><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">7</span><div class="step-text">完了報告 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">組織図・部門コード等を送付<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 60px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">取込結果の確認依頼を受領・回答</div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div style="margin-top: 80px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込・結果送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
+      <td class="g-cell" rowspan="5"><div class="g-no">②</div><div class="g-name">退職登録</div><span class="g-freq">随時</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">退職届受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har nk">←</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">退職届・情報を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">NET-J 退職情報登録</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell" style="vertical-align:middle"></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">完了連絡</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">完了報告を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
 
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑤</div><div class="gyomu-name">その他変更</div><div class="gyomu-freq">随時</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">変更届受領<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">NET-J 情報変更登録<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">完了連絡 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">住所届・扶養届等を送付<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">完了報告を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
+      <td class="g-cell" rowspan="5"><div class="g-no">③</div><div class="g-name">正社員登用</div><span class="g-freq">随時</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">登用資料受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har nk">←</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">登用の連絡・資料を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
-
-    <tr><td colspan="4" class="section-row"><td>■ 勤怠・給与計算サービス</td></td></tr>
-
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑥</div><div class="gyomu-name">勤怠計算</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">賃金日程確認（IHIBS受領）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">勤怠投入状況確認<br><span class="tool-tag">iS-Time</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">未入力者への督促 → NTS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">給与データ出力・確認・修正<br><span class="tool-tag">iS-Time</span><span class="tool-tag">Excel</span><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">5</span><div class="step-text">データ送付・計算依頼 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">6</span><div class="step-text">計算結果確認・時間外データ送付 → NTS<br><span class="tool-tag">Excel</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">督促を受け、勤怠を投入・承認</div></div>
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">時間外データを受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div class="step-box step-i"><span class="step-num">→</span><div class="step-text">賃金日程を送付<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 100px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込・計算結果を送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">NET-J 雇用形態変更登録</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="vconn k">↓</div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell" style="vertical-align:middle"></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">完了連絡</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">完了報告を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
 
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑦</div><div class="gyomu-name">交通費データ作成</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">賃金予定表受領（IHIBS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">交通費関連データ受領（NTS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">定期券代・ガソリン代確認<br><span class="tool-tag">Yahoo乗換</span><span class="tool-tag">Googleマップ</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">支給控除データ作成・送付 → IHIBS<br><span class="tool-tag">Excel</span><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 35px;"></div>
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">通勤補助申請書・交通費内訳票を送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div class="step-box step-i"><span class="step-num">→</span><div class="step-text">賃金予定表を送付<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 75px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込</div></div>
-      </td>
+      <td class="g-cell" rowspan="13"><div class="g-no">④</div><div class="g-name">組織改訂</div><span class="g-freq">随時・年度末</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">組織改訂資料受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har nk">←</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">組織図・部門コード等を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">組織変更データ作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">データ送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込・結果送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">取込結果確認</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">NTSへ確認依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←→</span><span class="task-txt">内容確認・回答</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">6</span><span class="task-txt">所属変更データ作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">7</span><span class="task-txt">所属変更データ送付・完了報告</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">完了報告を受領</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">所属変更データ取込</span></div></td>
     </tr>
 
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑧</div><div class="gyomu-name">その他支給控除</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">賃金予定表受領（IHIBS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">給与関連データ受領（NTS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">データ確認・精査<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">支給控除データ作成・送付 → IHIBS<br><span class="tool-tag">Excel</span><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 35px;"></div>
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">財形・融資・社宅等のデータを送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div class="step-box step-i"><span class="step-num">→</span><div class="step-text">賃金予定表を送付<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 75px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込</div></div>
-      </td>
+      <td class="g-cell" rowspan="5"><div class="g-no">⑤</div><div class="g-name">その他変更</div><span class="g-freq">随時</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">変更届受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har nk">←</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">住所届・扶養届等を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
-
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑨</div><div class="gyomu-name">月次給与計算</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">取込結果確認・NET-J修正<br><span class="tool-tag">Excel</span><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">賃金計算依頼 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">計算結果受領・確認<br><span class="tool-tag">Excel</span><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">再計算依頼（必要時） → IHIBS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col"></td>
-      <td class="lane-cell ihibs-col">
-        <div class="step-box step-i"><span class="step-num">→</span><div class="step-text">取込結果テキストデータを送付<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 35px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">賃金計算を実行・結果送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">NET-J 情報変更登録</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
-
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
     <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑩</div><div class="gyomu-name">給与後処理①<br>各部署書類作成</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">再計算結果受領（IHIBS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">各部署用書類作成<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">賃金明細出力依頼 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col"></td>
-      <td class="lane-cell ihibs-col">
-        <div class="step-box step-i"><span class="step-num">→</span><div class="step-text">再計算結果を送付<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 35px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">賃金明細を出力</div></div>
-      </td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">完了連絡</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">完了報告を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
     </tr>
 
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑪</div><div class="gyomu-name">給与後処理②<br>各種資料送付</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">後処理データ受領（IHIBS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">労務構成表作成<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">各種資料送付 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 75px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">労務構成表等を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div class="step-box step-i"><span class="step-num">→</span><div class="step-text">後処理用賃金計算結果を送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑫</div><div class="gyomu-name">給与後処理③<br>月変者確認</div><div class="gyomu-freq">月次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">次月用組合控除データ送付<br><span class="tool-tag">Excel</span><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">月変対象者確認<br><span class="tool-tag">NET-J</span><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">月変者報告 → NTS・IHIBS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 75px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">月変者報告を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div style="margin-top: 75px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">月変者報告を受領</div></div>
-      </td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑬</div><div class="gyomu-name">一時金計算</div><div class="gyomu-freq">年次（賞与時期）</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">出勤係数確認<br><span class="tool-tag">iS-Time</span><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">支給額・融資控除計算<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">計算依頼 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">一時金データ送付 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 95px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">一時金データを受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">一時金計算を実行・結果送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑭</div><div class="gyomu-name">臨時一時金計算</div><div class="gyomu-freq">随時</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">支給有無確認・評価依頼 → NTS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">一括取込シート作成<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">取込依頼 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">NET-Jマスタ修正<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">5</span><div class="step-text">計算依頼・結果確認 → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">6</span><div class="step-text">明細受領・送付 → NTS / 財務部<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">確認・評価査定を回答<br><span class="tool-tag">メール</span></div></div>
-        <div style="margin-top: 110px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">明細を受領</div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込・計算実行・結果送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑮</div><div class="gyomu-name">退職金計算</div><div class="gyomu-freq">随時</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">退職者情報受領・支給判定<br><span class="tool-tag">メール</span><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">一括取込シート作成・送付 → IHIBS<br><span class="tool-tag">Excel</span><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">取込結果確認<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">退職金計算依頼（確定前→確定） → IHIBS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">5</span><div class="step-text">住民税資料作成<br><span class="tool-tag">Excel</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">退職願等を送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div style="margin-top: 35px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込・退職金計算・結果送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑯</div><div class="gyomu-name">賃金更改</div><div class="gyomu-freq">年次</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">一覧表作成（管理職4月・一般職5月）<br><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">社内資料・取込シート受領（NTS）<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">賃金更改資料作成・送付 → IHIBS<br><span class="tool-tag">Excel</span><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">4</span><div class="step-text">取込結果確認<br><span class="tool-tag">NET-J</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">5</span><div class="step-text">賃金辞令作成資料を送付（外部委託）<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 35px;"></div>
-        <div class="step-box step-n"><span class="step-num">→</span><div class="step-text">組織役職別職務給一覧表等を送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell ihibs-col">
-        <div style="margin-top: 75px;"></div>
-        <div class="step-box step-i"><span class="step-num">←</span><div class="step-text">データ取込・結果送付<br><span class="tool-tag">メール</span></div></div>
-      </td>
-    </tr>
-
-    <tr><td colspan="4" class="section-row"><td>■ 有期雇用従業員管理サービス</td></td></tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑰</div><div class="gyomu-name">契約更新確認</div><div class="gyomu-freq">随時・四半期</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">更新対象者抽出<br><span class="tool-tag">NET-J</span><span class="tool-tag">Excel</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">更新有無確認依頼 → NTS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">回答受領後、次手続きへ連携<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-n"><span class="step-num">←→</span><div class="step-text">更新有無を確認・回答<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑱</div><div class="gyomu-name">労働契約更新</div><div class="gyomu-freq">随時・四半期</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">労働契約書作成<br><span class="tool-tag">Excel/Word</span><span class="tool-tag">共有フォルダ</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">契約書送付 → NTS<br><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">労働契約書を受領（総務部長）</div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
-    </tr>
-
-    <tr>
-      <td class="gyomu-cell"><div class="gyomu-inner"><div class="gyomu-no">⑲</div><div class="gyomu-name">新規労働契約</div><div class="gyomu-freq">随時・四半期</div></div></td>
-      <td class="lane-cell">
-        <div class="step-box step-k"><span class="step-num">1</span><div class="step-text">労働契約書作成<br><span class="tool-tag">Excel/Word</span><span class="tool-tag">共有フォルダ</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">2</span><div class="step-text">契約書送付 → NTS<br><span class="tool-tag">メール</span></div></div>
-        <div class="arrow-down">↓</div>
-        <div class="step-box step-k"><span class="step-num">3</span><div class="step-text">個人コード変更連絡（再雇用時）<br><span class="tool-tag">NET-J</span><span class="tool-tag">メール</span></div></div>
-      </td>
-      <td class="lane-cell nts-col">
-        <div style="margin-top: 55px;"></div>
-        <div class="step-box step-n"><span class="step-num">←</span><div class="step-text">労働契約書を受領（総務部長）</div></div>
-      </td>
-      <td class="lane-cell ihibs-col"></td>
-    </tr>
-
-  </tbody>
-</table>
+    </tbody>
+  </table>
 </div>
+
+<div id="sb" class="sec">
+  <div class="sec-hdr b"><span class="sec-ttl b">勤怠・給与計算サービス</span><span class="sec-badge b">⑥ 〜 ⑯</span></div>
+  <table class="tbl">
+    <thead><tr>
+      <th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-ar"></th><th class="th-n">NTS担当者</th><th class="th-ar2"></th><th class="th-i">IHIBS担当者</th>
+    </tr></thead>
+    <tbody>
+
+    <tr>
+      <td class="g-cell" rowspan="13"><div class="g-no">⑥</div><div class="g-name">勤怠計算</div><span class="g-freq">月次</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">賃金日程確認</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har ik">←</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#854F0B">←</div></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">賃金日程を送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">勤怠投入状況確認</span><br><span class="tool k">iS-Time</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">未入力者への督促</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">督促受領・勤怠投入</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">給与データ出力・確認・修正</span><br><span class="tool k">iS-Time</span><span class="tool k">Excel</span><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har kn" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">データ送付・計算依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込・計算実行</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har ik">←</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">6</span><span class="task-txt">計算結果確認</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">計算結果を送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">7</span><span class="task-txt">時間外データ送付</span><br><span class="tool k">Excel</span><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">時間外データを受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="9"><div class="g-no">⑦</div><div class="g-name">交通費データ作成</div><span class="g-freq">月次</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">賃金予定表受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har ik">←</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#854F0B">←</div></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">賃金予定表を送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har nk">←</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">交通費関連データ受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">通勤補助申請書等を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">定期券代・ガソリン代確認</span><br><span class="tool k">Yahoo乗換</span><span class="tool k">Googleマップ</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">支給控除データ作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">データ送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込</span></div></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="9"><div class="g-no">⑧</div><div class="g-name">その他支給控除</div><span class="g-freq">月次</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">賃金予定表受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har ik">←</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#854F0B">←</div></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">賃金予定表を送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har nk">←</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">給与関連データ受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">財形・融資・社宅等のデータ送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">データ確認・精査</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">支給控除データ作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">データ送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込</span></div></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="9"><div class="g-no">⑨</div><div class="g-name">月次給与計算</div><span class="g-freq">月次</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">取込結果確認・NET-J修正</span><br><span class="tool k">Excel</span><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell"><div class="har ik">←</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#854F0B">←</div></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">取込結果テキストを送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">賃金計算依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">賃金計算を実行</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har ik">←</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">計算結果受領・確認</span><br><span class="tool k">Excel</span><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">計算結果を送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">チェックリスト作成・検証</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">確定処理依頼（本番）</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">本番確定処理を実行</span></div></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="7"><div class="g-no">⑩⑪⑫</div><div class="g-name">給与後処理①②③</div><span class="g-freq">月次</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">後処理データ受領</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har ik">←</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#854F0B">←</div></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">後処理データ一式を送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">各部署用書類・労務構成表作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">各種資料送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">労務構成表等を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">月変者確認・報告</span><br><span class="tool k">NET-J</span><span class="tool k">Excel</span><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">月変者報告を受領</span></div></td>
+      <td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">月変者報告を受領</span></div></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="7"><div class="g-no">⑬</div><div class="g-name">一時金計算</div><span class="g-freq">年次（賞与）</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">出勤係数確認</span><br><span class="tool k">iS-Time</span><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">支給額・融資控除計算</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">計算依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">一時金計算を実行・結果送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har ik">←</div></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#854F0B">←</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">結果確認・データ送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">一時金データを受領</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">計算結果を送付</span></div></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="11"><div class="g-no">⑭</div><div class="g-name">臨時一時金計算</div><span class="g-freq">随時</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">支給有無確認・評価依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"><div class="har kn">→</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">確認・評価査定を回答</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">一括取込シート作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">取込依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">NET-Jマスタ修正（乙欄適用）</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">計算依頼・結果確認</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">計算実行・結果送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">6</span><span class="task-txt">明細送付・財務部提出</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">明細を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="9"><div class="g-no">⑮</div><div class="g-name">退職金計算</div><span class="g-freq">随時</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">退職者情報受領・支給判定</span><br><span class="tool k">メール</span><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell"><div class="har nk">←</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">退職願等を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">一括取込シート作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">取込依頼・結果確認</span><br><span class="tool k">メール</span><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込・結果送付</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">退職金計算依頼（確定前→確定）</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">退職金計算・結果送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">住民税資料作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="9"><div class="g-no">⑯</div><div class="g-name">賃金更改</div><span class="g-freq">年次</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">一覧表作成（管理職4月・一般職5月）</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell"><div class="har nk">←</div></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">組織役職別職務給一覧表等を送付</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">賃金更改資料作成</span><br><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har" style="color:#185FA5">→</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">資料送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">←</span><span class="task-txt">データ取込・結果送付</span><br><span class="tool i">メール</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"><div class="har ik">←</div></td><td class="i-cell" style="vertical-align:middle"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">4</span><span class="task-txt">取込結果確認</span><br><span class="tool k">NET-J</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell"></td>
+      <td class="i-cell"><div class="task i"><span class="task-num i">→</span><span class="task-txt">取込結果を送付</span></div></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">5</span><span class="task-txt">賃金辞令作成資料を外部委託へ送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div id="sc" class="sec">
+  <div class="sec-hdr c"><span class="sec-ttl c">有期雇用従業員管理サービス</span><span class="sec-badge c">⑰ 〜 ⑲</span></div>
+  <table class="tbl">
+    <thead><tr>
+      <th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-ar"></th><th class="th-n">NTS担当者</th><th class="th-ar2"></th><th class="th-i">IHIBS担当者</th>
+    </tr></thead>
+    <tbody>
+
+    <tr>
+      <td class="g-cell" rowspan="5"><div class="g-no">⑰</div><div class="g-name">契約更新確認</div><span class="g-freq">随時・四半期</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">更新対象者抽出</span><br><span class="tool k">NET-J</span><span class="tool k">Excel</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">更新有無確認依頼</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←→</span><span class="task-txt">更新有無を確認・回答</span><br><span class="tool n">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har nk">←</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">回答受領・次手続きへ連携</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">→</span><span class="task-txt">回答を送付</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="3"><div class="g-no">⑱</div><div class="g-name">労働契約更新</div><span class="g-freq">随時・四半期</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">労働契約書作成</span><br><span class="tool k">Excel/Word</span><span class="tool k">共有フォルダ</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">契約書送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">労働契約書を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    <tr>
+      <td class="g-cell" rowspan="5"><div class="g-no">⑲</div><div class="g-name">新規労働契約</div><span class="g-freq">随時・四半期</span></td>
+      <td class="k-cell"><div class="task k"><span class="task-num k">1</span><span class="task-txt">労働契約書作成</span><br><span class="tool k">Excel/Word</span><span class="tool k">共有フォルダ</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell"><div class="har kn">→</div></td><td class="n-cell" style="vertical-align:middle"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">2</span><span class="task-txt">契約書送付</span><br><span class="tool k">メール</span></div></td>
+      <td class="ar-cell"></td>
+      <td class="n-cell"><div class="task n"><span class="task-num n">←</span><span class="task-txt">労働契約書を受領</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+    <tr><td class="k-cell"><div class="vconn k">↓</div></td><td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td></tr>
+    <tr>
+      <td class="k-cell"><div class="task k"><span class="task-num k">3</span><span class="task-txt">個人コード変更連絡（再雇用時）</span><br><span class="tool k">NET-J</span><span class="tool k">メール</span></div></td>
+      <td class="ar-cell empty-cell"></td><td class="n-cell empty-cell"></td><td class="ar-cell empty-cell"></td><td class="i-cell empty-cell"></td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>
+</div>
+
+<script>
+function scrollSec(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
+const secs=[{id:'sa',cls:'a'},{id:'sb',cls:'b'},{id:'sc',cls:'c'}]
+const btns=document.querySelectorAll('.nb')
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const s=secs.find(x=>x.id===e.target.id)
+      if(s){btns.forEach(b=>b.classList.remove('on'));const ab=document.querySelector('.nb.'+s.cls);if(ab)ab.classList.add('on')}
+    }
+  })
+},{threshold:0.05,rootMargin:'-50px 0px -70% 0px'})
+secs.forEach(s=>{const el=document.getElementById(s.id);if(el)obs.observe(el)})
+</script>

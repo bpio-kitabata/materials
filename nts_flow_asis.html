@@ -1,11 +1,11 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-size:12px}
 .root{color:var(--color-text-primary);font-size:12px}
 
-.nav-wrap{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:8px 0 6px;margin-bottom:14px}
-.cat-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:0}
+/* Nav sits at top of .root, always visible */
+.nav-wrap{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:8px 0 6px;position:sticky;top:0;z-index:100}
+.cat-row{display:flex;gap:5px;flex-wrap:wrap}
 .cat-btn{padding:5px 13px;border-radius:99px;border:0.5px solid;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent}
 .cat-btn.a{border-color:#185FA5;color:#185FA5}
 .cat-btn.a.on{background:#185FA5;color:#fff}
@@ -13,9 +13,8 @@ body{font-size:12px}
 .cat-btn.b.on{background:#0F6E56;color:#fff}
 .cat-btn.c{border-color:#854F0B;color:#854F0B}
 .cat-btn.c.on{background:#854F0B;color:#fff}
-
-.sub-wrap{overflow:hidden;max-height:0;transition:max-height .25s ease;margin-top:0}
-.sub-wrap.open{max-height:120px;margin-top:5px}
+.sub-wrap{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.sub-wrap.open{max-height:200px;margin-top:5px}
 .sub-row{display:flex;gap:3px;flex-wrap:wrap;padding-top:5px;border-top:0.5px solid var(--color-border-tertiary)}
 .sub-btn{padding:3px 8px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);font-size:10px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s;white-space:nowrap}
 .sub-btn:hover{background:var(--color-background-secondary)}
@@ -23,6 +22,7 @@ body{font-size:12px}
 .sub-btn.on.b{background:#E1F5EE;border-color:#0F6E56;color:#085041;font-weight:500}
 .sub-btn.on.c{background:#FAEEDA;border-color:#854F0B;color:#633806;font-weight:500}
 
+.content{padding-top:4px}
 .sec{margin-bottom:20px}
 .sec-hdr{display:flex;align-items:center;gap:8px;padding:7px 11px;border-radius:6px;margin-bottom:10px}
 .sec-hdr.a{background:#E6F1FB;border-left:3px solid #185FA5}
@@ -35,7 +35,6 @@ body{font-size:12px}
 .sec-badge.b{background:#9FE1CB;color:#085041}
 .sec-badge.c{background:#FAC775;color:#633806}
 
-/* Flow table */
 .ftbl{width:100%;border-collapse:collapse;table-layout:fixed}
 .ftbl th{padding:7px 8px;font-size:11px;font-weight:500;text-align:center;border:0.5px solid var(--color-border-secondary)}
 .th-g{background:var(--color-background-secondary);color:var(--color-text-secondary);width:88px}
@@ -43,475 +42,379 @@ body{font-size:12px}
 .th-n{background:#0F6E56;color:#fff}
 .th-i{background:#854F0B;color:#fff}
 .ftbl td{border-right:0.5px solid var(--color-border-secondary);border-left:0.5px solid var(--color-border-secondary);vertical-align:top;padding:0}
-.ftbl td:last-child{border-right:0.5px solid var(--color-border-secondary)}
 .g-cell{background:var(--color-background-secondary);padding:8px 7px;vertical-align:top;border-top:0.5px solid var(--color-border-secondary);border-bottom:0.5px solid var(--color-border-secondary)}
 .g-no{font-size:10px;color:var(--color-text-tertiary);margin-bottom:2px}
 .g-name{font-size:11px;font-weight:500;line-height:1.4;margin-bottom:3px}
 .g-freq{display:inline-block;font-size:10px;padding:1px 5px;border-radius:99px;background:var(--color-background-tertiary);color:var(--color-text-secondary)}
-
-/* SVG flow rows */
-.flow-row td{padding:0;border-top:none;border-bottom:none}
-.flow-row td svg{display:block;width:100%}
-.flow-sep td{height:1px;background:var(--color-border-tertiary);border-top:0.5px solid var(--color-border-tertiary);border-bottom:none;padding:0}
-
-/* node styles baked into SVG but these help with dark mode text */
+.flow-sep td{height:1px;padding:0;background:var(--color-border-tertiary)}
 </style>
 
-<div class="root">
-<div class="nav-wrap">
+<div class="root" id="root">
+<div class="nav-wrap" id="navWrap">
   <div class="cat-row" id="catRow"></div>
   <div class="sub-wrap" id="subWrap">
     <div class="sub-row" id="subRow"></div>
   </div>
 </div>
+<div class="content" id="content">
 
 <div id="sa" class="sec" data-cat="a">
   <div class="sec-hdr a"><span class="sec-ttl a">従業員情報管理</span><span class="sec-badge a">① 〜 ⑤</span></div>
-  <table class="ftbl">
-    <thead><tr><th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-n">NTS</th><th class="th-i">IHIBS</th></tr></thead>
-    <tbody id="tbody-a"></tbody>
-  </table>
+  <table class="ftbl"><thead><tr><th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-n">NTS</th><th class="th-i">IHIBS</th></tr></thead><tbody id="tbody-a"></tbody></table>
 </div>
 
 <div id="sb" class="sec" data-cat="b">
   <div class="sec-hdr b"><span class="sec-ttl b">勤怠・給与計算</span><span class="sec-badge b">⑥ 〜 ⑯</span></div>
-  <table class="ftbl">
-    <thead><tr><th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-n">NTS</th><th class="th-i">IHIBS</th></tr></thead>
-    <tbody id="tbody-b"></tbody>
-  </table>
+  <table class="ftbl"><thead><tr><th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-n">NTS</th><th class="th-i">IHIBS</th></tr></thead><tbody id="tbody-b"></tbody></table>
 </div>
 
 <div id="sc" class="sec" data-cat="c">
   <div class="sec-hdr c"><span class="sec-ttl c">有期雇用管理</span><span class="sec-badge c">⑰ 〜 ⑲</span></div>
-  <table class="ftbl">
-    <thead><tr><th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-n">NTS</th><th class="th-i">IHIBS</th></tr></thead>
-    <tbody id="tbody-c"></tbody>
-  </table>
+  <table class="ftbl"><thead><tr><th class="th-g">業務</th><th class="th-k">熊本BPO</th><th class="th-n">NTS</th><th class="th-i">IHIBS</th></tr></thead><tbody id="tbody-c"></tbody></table>
+</div>
+
 </div>
 </div>
 
 <script>
-const CATS = {
-  a:{label:'従業員情報管理',color:'#185FA5'},
-  b:{label:'勤怠・給与計算',color:'#0F6E56'},
-  c:{label:'有期雇用管理',color:'#854F0B'}
-}
+const CATS={a:{label:'従業員情報管理',color:'#185FA5'},b:{label:'勤怠・給与計算',color:'#0F6E56'},c:{label:'有期雇用管理',color:'#854F0B'}}
+const C={kFill:'#EFF6FF',kBorder:'#93C5FD',kText:'#1E40AF',nFill:'#F0FDF4',nBorder:'#86EFAC',nText:'#166534',iFill:'#FFFBEB',iBorder:'#FCD34D',iText:'#92400E',line:'#94A3B8',arrow:'#64748B'}
+const LANE_W=180,BOX_H=44,BOX_W=160,ROW_H=68,SVG_W=LANE_W*3
+const LANE_CX=[LANE_W*0+LANE_W/2,LANE_W*1+LANE_W/2,LANE_W*2+LANE_W/2]
+const COL={k:0,n:1,i:2}
 
-/* Color palette */
-const C = {
-  kFill:'#EFF6FF', kBorder:'#93C5FD', kText:'#1E40AF',
-  nFill:'#F0FDF4', nBorder:'#86EFAC', nText:'#166534',
-  iFill:'#FFFBEB', iBorder:'#FCD34D', iText:'#92400E',
-  line:'#94A3B8', arrow:'#64748B'
-}
-
-/* Flow data: steps array
-   Each step: {lane:'k'|'n'|'i', label, tools:[]}
-   Connector between steps: if next step is same lane → vertical line
-   if different lane → horizontal connector crossing lanes
-*/
-const FLOWS = [
-  {id:'g01', no:'①', name:'入社登録', freq:'随時', cat:'a', steps:[
-    {lane:'n', label:'入社資料一式を送付', tools:['メール']},
-    {lane:'k', label:'資料受領', tools:['メール']},
-    {lane:'k', label:'書類確認・フォルダ移動', tools:['共有フォルダ']},
-    {lane:'k', label:'チェックリスト準備', tools:['Excel']},
-    {lane:'k', label:'NET-J 従業員情報登録', tools:['NET-J']},
-    {lane:'k', label:'登録完了連絡', tools:['メール']},
-    {lane:'n', label:'完了報告を受領', tools:[]},
+const FLOWS=[
+  {id:'g01',no:'①',name:'入社登録',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'入社資料一式を送付',tools:['メール']},
+    {lane:'k',label:'資料受領',tools:['メール']},
+    {lane:'k',label:'書類確認・フォルダ移動',tools:['共有フォルダ']},
+    {lane:'k',label:'チェックリスト準備',tools:['Excel']},
+    {lane:'k',label:'NET-J 従業員情報登録',tools:['NET-J']},
+    {lane:'k',label:'登録完了連絡',tools:['メール']},
+    {lane:'n',label:'完了報告を受領',tools:[]},
   ]},
-  {id:'g02', no:'②', name:'退職登録', freq:'随時', cat:'a', steps:[
-    {lane:'n', label:'退職届・情報を送付', tools:['メール']},
-    {lane:'k', label:'退職届受領', tools:['メール']},
-    {lane:'k', label:'NET-J 退職情報登録', tools:['NET-J']},
-    {lane:'k', label:'登録完了連絡', tools:['メール']},
-    {lane:'n', label:'完了報告を受領', tools:[]},
+  {id:'g02',no:'②',name:'退職登録',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'退職届・情報を送付',tools:['メール']},
+    {lane:'k',label:'退職届受領',tools:['メール']},
+    {lane:'k',label:'NET-J 退職情報登録',tools:['NET-J']},
+    {lane:'k',label:'登録完了連絡',tools:['メール']},
+    {lane:'n',label:'完了報告を受領',tools:[]},
   ]},
-  {id:'g03', no:'③', name:'正社員登用', freq:'随時', cat:'a', steps:[
-    {lane:'n', label:'登用の連絡・資料を送付', tools:['メール']},
-    {lane:'k', label:'登用資料受領', tools:['メール']},
-    {lane:'k', label:'NET-J 雇用形態変更登録', tools:['NET-J']},
-    {lane:'k', label:'登録完了連絡', tools:['メール']},
-    {lane:'n', label:'完了報告を受領', tools:[]},
+  {id:'g03',no:'③',name:'正社員登用',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'登用の連絡・資料を送付',tools:['メール']},
+    {lane:'k',label:'登用資料受領',tools:['メール']},
+    {lane:'k',label:'NET-J 雇用形態変更登録',tools:['NET-J']},
+    {lane:'k',label:'登録完了連絡',tools:['メール']},
+    {lane:'n',label:'完了報告を受領',tools:[]},
   ]},
-  {id:'g04', no:'④', name:'組織改訂', freq:'随時・年度末', cat:'a', steps:[
-    {lane:'n', label:'組織図・部門コード等を送付', tools:['メール']},
-    {lane:'k', label:'組織改訂資料受領', tools:['メール','共有フォルダ']},
-    {lane:'k', label:'組織変更データ作成', tools:['Excel']},
-    {lane:'k', label:'組織変更データ送付', tools:['メール']},
-    {lane:'i', label:'データ取込・結果送付', tools:['メール']},
-    {lane:'k', label:'取込結果受領・確認', tools:['NET-J']},
-    {lane:'k', label:'NTSへ内容確認依頼', tools:['メール']},
-    {lane:'n', label:'内容確認・回答', tools:['メール']},
-    {lane:'k', label:'回答受領', tools:['メール']},
-    {lane:'k', label:'従業員所属変更データ作成', tools:['Excel']},
-    {lane:'k', label:'所属変更データ送付', tools:['メール']},
-    {lane:'i', label:'所属変更データ取込・結果送付', tools:[]},
-    {lane:'k', label:'取込結果確認（2回目）', tools:['NET-J']},
-    {lane:'k', label:'作業完了報告', tools:['メール']},
-    {lane:'n', label:'完了報告を受領', tools:[]},
+  {id:'g04',no:'④',name:'組織改訂',freq:'随時・年度末',cat:'a',steps:[
+    {lane:'n',label:'組織図・部門コード等を送付',tools:['メール']},
+    {lane:'k',label:'組織改訂資料受領',tools:['メール','共有フォルダ']},
+    {lane:'k',label:'組織変更データ作成',tools:['Excel']},
+    {lane:'k',label:'組織変更データ送付',tools:['メール']},
+    {lane:'i',label:'データ取込・結果送付',tools:['メール']},
+    {lane:'k',label:'取込結果受領・確認',tools:['NET-J']},
+    {lane:'k',label:'NTSへ内容確認依頼',tools:['メール']},
+    {lane:'n',label:'内容確認・回答',tools:['メール']},
+    {lane:'k',label:'回答受領',tools:['メール']},
+    {lane:'k',label:'従業員所属変更データ作成',tools:['Excel']},
+    {lane:'k',label:'所属変更データ送付',tools:['メール']},
+    {lane:'i',label:'所属変更データ取込・結果送付',tools:[]},
+    {lane:'k',label:'取込結果確認（2回目）',tools:['NET-J']},
+    {lane:'k',label:'作業完了報告',tools:['メール']},
+    {lane:'n',label:'完了報告を受領',tools:[]},
   ]},
-  {id:'g05', no:'⑤', name:'その他変更', freq:'随時', cat:'a', steps:[
-    {lane:'n', label:'住所届・扶養届等を送付', tools:['メール']},
-    {lane:'k', label:'変更届受領', tools:['メール']},
-    {lane:'k', label:'NET-J 情報変更登録', tools:['NET-J']},
-    {lane:'k', label:'登録完了連絡', tools:['メール']},
-    {lane:'n', label:'完了報告を受領', tools:[]},
+  {id:'g05',no:'⑤',name:'その他変更',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'住所届・扶養届等を送付',tools:['メール']},
+    {lane:'k',label:'変更届受領',tools:['メール']},
+    {lane:'k',label:'NET-J 情報変更登録',tools:['NET-J']},
+    {lane:'k',label:'登録完了連絡',tools:['メール']},
+    {lane:'n',label:'完了報告を受領',tools:[]},
   ]},
-  {id:'g06', no:'⑥', name:'勤怠計算', freq:'月次', cat:'b', steps:[
-    {lane:'i', label:'賃金日程を送付', tools:['メール']},
-    {lane:'k', label:'賃金日程確認', tools:['メール']},
-    {lane:'k', label:'勤怠投入状況確認', tools:['iS-Time']},
-    {lane:'k', label:'未入力者への督促', tools:['メール','iS-Time']},
-    {lane:'n', label:'督促受領・勤怠を投入・承認', tools:[]},
-    {lane:'k', label:'給与データ出力', tools:['iS-Time','Excel']},
-    {lane:'k', label:'給与データ確認・修正', tools:['Excel','NET-J']},
-    {lane:'k', label:'勤怠計算依頼・データ送付', tools:['メール']},
-    {lane:'i', label:'データ取込・計算実行', tools:[]},
-    {lane:'k', label:'計算結果確認', tools:['Excel']},
-    {lane:'i', label:'計算結果を送付', tools:['メール']},
-    {lane:'k', label:'再計算依頼（必要時）', tools:['メール']},
-    {lane:'i', label:'再計算実行', tools:[]},
-    {lane:'k', label:'時間外データ作成・送付', tools:['Excel','メール']},
-    {lane:'n', label:'時間外データを受領', tools:[]},
+  {id:'g06',no:'⑥',name:'勤怠計算',freq:'月次',cat:'b',steps:[
+    {lane:'i',label:'賃金日程を送付',tools:['メール']},
+    {lane:'k',label:'賃金日程確認',tools:['メール']},
+    {lane:'k',label:'勤怠投入状況確認',tools:['iS-Time']},
+    {lane:'k',label:'未入力者への督促',tools:['メール','iS-Time']},
+    {lane:'n',label:'督促受領・勤怠を投入',tools:[]},
+    {lane:'k',label:'給与データ出力',tools:['iS-Time','Excel']},
+    {lane:'k',label:'給与データ確認・修正',tools:['Excel','NET-J']},
+    {lane:'k',label:'勤怠計算依頼・データ送付',tools:['メール']},
+    {lane:'i',label:'データ取込・計算実行',tools:[]},
+    {lane:'k',label:'計算結果確認',tools:['Excel']},
+    {lane:'i',label:'計算結果を送付',tools:['メール']},
+    {lane:'k',label:'再計算依頼（必要時）',tools:['メール']},
+    {lane:'i',label:'再計算実行',tools:[]},
+    {lane:'k',label:'時間外データ作成・送付',tools:['Excel','メール']},
+    {lane:'n',label:'時間外データを受領',tools:[]},
   ]},
-  {id:'g07', no:'⑦', name:'交通費データ作成', freq:'月次', cat:'b', steps:[
-    {lane:'i', label:'賃金予定表を送付', tools:['メール']},
-    {lane:'k', label:'賃金予定表受領', tools:['メール']},
-    {lane:'n', label:'通勤補助申請書・内訳票を送付', tools:['メール']},
-    {lane:'k', label:'交通費関連データ受領', tools:['メール']},
-    {lane:'k', label:'定期券代確認', tools:['Yahoo乗換','ジョルダン']},
-    {lane:'k', label:'ガソリン代確認', tools:['Excel','Googleマップ']},
-    {lane:'k', label:'支給控除データ作成', tools:['Excel']},
-    {lane:'k', label:'支給控除データ送付', tools:['メール']},
-    {lane:'i', label:'データ取込', tools:[]},
+  {id:'g07',no:'⑦',name:'交通費データ作成',freq:'月次',cat:'b',steps:[
+    {lane:'i',label:'賃金予定表を送付',tools:['メール']},
+    {lane:'k',label:'賃金予定表受領',tools:['メール']},
+    {lane:'n',label:'通勤補助申請書・内訳票を送付',tools:['メール']},
+    {lane:'k',label:'交通費関連データ受領',tools:['メール']},
+    {lane:'k',label:'定期券代確認',tools:['Yahoo乗換','ジョルダン']},
+    {lane:'k',label:'ガソリン代確認',tools:['Excel','Googleマップ']},
+    {lane:'k',label:'支給控除データ作成',tools:['Excel']},
+    {lane:'k',label:'支給控除データ送付',tools:['メール']},
+    {lane:'i',label:'データ取込',tools:[]},
   ]},
-  {id:'g08', no:'⑧', name:'その他支給控除', freq:'月次', cat:'b', steps:[
-    {lane:'i', label:'賃金予定表を送付', tools:['メール']},
-    {lane:'k', label:'賃金予定表受領', tools:['メール']},
-    {lane:'n', label:'財形・融資・社宅等のデータを送付', tools:['メール']},
-    {lane:'k', label:'給与関連データ受領', tools:['メール']},
-    {lane:'k', label:'データ確認・精査', tools:['Excel']},
-    {lane:'k', label:'支給控除データ作成', tools:['Excel']},
-    {lane:'k', label:'支給控除データ送付', tools:['メール']},
-    {lane:'i', label:'データ取込', tools:[]},
+  {id:'g08',no:'⑧',name:'その他支給控除',freq:'月次',cat:'b',steps:[
+    {lane:'i',label:'賃金予定表を送付',tools:['メール']},
+    {lane:'k',label:'賃金予定表受領',tools:['メール']},
+    {lane:'n',label:'財形・融資・社宅等のデータを送付',tools:['メール']},
+    {lane:'k',label:'給与関連データ受領',tools:['メール']},
+    {lane:'k',label:'データ確認・精査',tools:['Excel']},
+    {lane:'k',label:'支給控除データ作成',tools:['Excel']},
+    {lane:'k',label:'支給控除データ送付',tools:['メール']},
+    {lane:'i',label:'データ取込',tools:[]},
   ]},
-  {id:'g09', no:'⑨', name:'月次給与計算', freq:'月次', cat:'b', steps:[
-    {lane:'i', label:'計算結果テキストを送付', tools:['メール']},
-    {lane:'k', label:'計算結果確認（支給控除）', tools:['メール','Excel']},
-    {lane:'k', label:'NET-J 修正登録（必要時）', tools:['NET-J']},
-    {lane:'k', label:'賃金計算依頼', tools:['メール']},
-    {lane:'i', label:'賃金計算を実行', tools:[]},
-    {lane:'k', label:'賃金計算結果受領・確認', tools:['Excel','NET-J']},
-    {lane:'i', label:'計算結果を送付', tools:['メール']},
-    {lane:'k', label:'賃金再計算依頼（必要時）', tools:['メール']},
-    {lane:'i', label:'再計算を実行', tools:[]},
-    {lane:'k', label:'給与確定', tools:[]},
+  {id:'g09',no:'⑨',name:'月次給与計算',freq:'月次',cat:'b',steps:[
+    {lane:'i',label:'計算結果テキストを送付',tools:['メール']},
+    {lane:'k',label:'計算結果確認（支給控除）',tools:['メール','Excel']},
+    {lane:'k',label:'NET-J 修正登録（必要時）',tools:['NET-J']},
+    {lane:'k',label:'賃金計算依頼',tools:['メール']},
+    {lane:'i',label:'賃金計算を実行',tools:[]},
+    {lane:'k',label:'賃金計算結果受領・確認',tools:['Excel','NET-J']},
+    {lane:'i',label:'計算結果を送付',tools:['メール']},
+    {lane:'k',label:'賃金再計算依頼（必要時）',tools:['メール']},
+    {lane:'i',label:'再計算を実行',tools:[]},
+    {lane:'k',label:'給与確定',tools:[]},
   ]},
-  {id:'g10', no:'⑩', name:'給与後処理①各部署書類作成', freq:'月次', cat:'b', steps:[
-    {lane:'i', label:'再計算結果を送付', tools:['メール']},
-    {lane:'k', label:'再計算結果受領', tools:['メール']},
-    {lane:'k', label:'各部署用書類作成', tools:['Excel']},
-    {lane:'k', label:'賃金明細出力依頼', tools:['メール']},
-    {lane:'i', label:'賃金明細を出力', tools:[]},
+  {id:'g10',no:'⑩',name:'給与後処理①各部署書類',freq:'月次',cat:'b',steps:[
+    {lane:'i',label:'再計算結果を送付',tools:['メール']},
+    {lane:'k',label:'再計算結果受領',tools:['メール']},
+    {lane:'k',label:'各部署用書類作成',tools:['Excel']},
+    {lane:'k',label:'賃金明細出力依頼',tools:['メール']},
+    {lane:'i',label:'賃金明細を出力',tools:[]},
   ]},
-  {id:'g11', no:'⑪', name:'給与後処理②各種資料送付', freq:'月次', cat:'b', steps:[
-    {lane:'i', label:'後処理データを送付', tools:['メール']},
-    {lane:'k', label:'後処理データ受領', tools:['メール']},
-    {lane:'k', label:'労務構成表作成', tools:['Excel']},
-    {lane:'k', label:'各種資料送付', tools:['メール']},
-    {lane:'n', label:'労務構成表等を受領', tools:[]},
+  {id:'g11',no:'⑪',name:'給与後処理②各種資料送付',freq:'月次',cat:'b',steps:[
+    {lane:'i',label:'後処理データを送付',tools:['メール']},
+    {lane:'k',label:'後処理データ受領',tools:['メール']},
+    {lane:'k',label:'労務構成表作成',tools:['Excel']},
+    {lane:'k',label:'各種資料送付',tools:['メール']},
+    {lane:'n',label:'労務構成表等を受領',tools:[]},
   ]},
-  {id:'g12', no:'⑫', name:'給与後処理③月変者確認', freq:'月次', cat:'b', steps:[
-    {lane:'k', label:'次月用組合控除データ送付', tools:['Excel','メール']},
-    {lane:'k', label:'月変対象者確認', tools:['NET-J','Excel']},
-    {lane:'k', label:'月変者報告', tools:['メール']},
-    {lane:'n', label:'月変者報告を受領', tools:[]},
-    {lane:'i', label:'月変者報告を受領', tools:[]},
+  {id:'g12',no:'⑫',name:'給与後処理③月変者確認',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'次月用組合控除データ送付',tools:['Excel','メール']},
+    {lane:'k',label:'月変対象者確認',tools:['NET-J','Excel']},
+    {lane:'k',label:'月変者報告',tools:['メール']},
+    {lane:'n',label:'月変者報告を受領',tools:[]},
+    {lane:'i',label:'月変者報告を受領',tools:[]},
   ]},
-  {id:'g13', no:'⑬', name:'一時金計算', freq:'年次（賞与）', cat:'b', steps:[
-    {lane:'k', label:'出勤係数確認', tools:['iS-Time','Excel']},
-    {lane:'k', label:'支給額・融資控除計算', tools:['Excel']},
-    {lane:'k', label:'取込・計算依頼', tools:['メール']},
-    {lane:'i', label:'一時金計算実行・結果送付', tools:['メール']},
-    {lane:'k', label:'データ送付（NTS・財務部）', tools:['メール']},
-    {lane:'n', label:'一時金データを受領', tools:[]},
+  {id:'g13',no:'⑬',name:'一時金計算',freq:'年次（賞与）',cat:'b',steps:[
+    {lane:'k',label:'出勤係数確認',tools:['iS-Time','Excel']},
+    {lane:'k',label:'支給額・融資控除計算',tools:['Excel']},
+    {lane:'k',label:'取込・計算依頼',tools:['メール']},
+    {lane:'i',label:'一時金計算実行・結果送付',tools:['メール']},
+    {lane:'k',label:'データ送付（NTS・財務部）',tools:['メール']},
+    {lane:'n',label:'一時金データを受領',tools:[]},
   ]},
-  {id:'g14', no:'⑭', name:'臨時一時金計算', freq:'随時', cat:'b', steps:[
-    {lane:'k', label:'支給有無確認・評価依頼', tools:['メール']},
-    {lane:'n', label:'確認・評価査定を回答', tools:['メール']},
-    {lane:'k', label:'一括取込シート作成', tools:['Excel']},
-    {lane:'k', label:'取込依頼', tools:['メール']},
-    {lane:'i', label:'データ取込', tools:[]},
-    {lane:'k', label:'NET-Jマスタ修正（乙欄適用）', tools:['NET-J']},
-    {lane:'k', label:'計算依頼・結果確認', tools:['メール']},
-    {lane:'i', label:'計算実行・結果送付', tools:['メール']},
-    {lane:'k', label:'明細送付・財務部提出', tools:['メール']},
-    {lane:'n', label:'明細を受領', tools:[]},
+  {id:'g14',no:'⑭',name:'臨時一時金計算',freq:'随時',cat:'b',steps:[
+    {lane:'k',label:'支給有無確認・評価依頼',tools:['メール']},
+    {lane:'n',label:'確認・評価査定を回答',tools:['メール']},
+    {lane:'k',label:'一括取込シート作成',tools:['Excel']},
+    {lane:'k',label:'取込依頼',tools:['メール']},
+    {lane:'i',label:'データ取込',tools:[]},
+    {lane:'k',label:'NET-Jマスタ修正（乙欄適用）',tools:['NET-J']},
+    {lane:'k',label:'計算依頼・結果確認',tools:['メール']},
+    {lane:'i',label:'計算実行・結果送付',tools:['メール']},
+    {lane:'k',label:'明細送付・財務部提出',tools:['メール']},
+    {lane:'n',label:'明細を受領',tools:[]},
   ]},
-  {id:'g15', no:'⑮', name:'退職金計算', freq:'随時', cat:'b', steps:[
-    {lane:'n', label:'退職願等を送付', tools:['メール']},
-    {lane:'k', label:'退職者情報受領・支給判定', tools:['メール','NET-J']},
-    {lane:'k', label:'一括取込シート作成', tools:['Excel']},
-    {lane:'k', label:'取込依頼・結果確認', tools:['メール','NET-J']},
-    {lane:'i', label:'データ取込・結果送付', tools:[]},
-    {lane:'k', label:'退職金計算依頼（確定前→確定）', tools:['メール']},
-    {lane:'i', label:'退職金計算・結果送付', tools:['メール']},
-    {lane:'k', label:'住民税資料作成', tools:['Excel']},
+  {id:'g15',no:'⑮',name:'退職金計算',freq:'随時',cat:'b',steps:[
+    {lane:'n',label:'退職願等を送付',tools:['メール']},
+    {lane:'k',label:'退職者情報受領・支給判定',tools:['メール','NET-J']},
+    {lane:'k',label:'一括取込シート作成',tools:['Excel']},
+    {lane:'k',label:'取込依頼・結果確認',tools:['メール','NET-J']},
+    {lane:'i',label:'データ取込・結果送付',tools:[]},
+    {lane:'k',label:'退職金計算依頼（確定前→確定）',tools:['メール']},
+    {lane:'i',label:'退職金計算・結果送付',tools:['メール']},
+    {lane:'k',label:'住民税資料作成',tools:['Excel']},
   ]},
-  {id:'g16', no:'⑯', name:'賃金更改', freq:'年次', cat:'b', steps:[
-    {lane:'n', label:'組織役職別職務給一覧表等を送付', tools:['メール']},
-    {lane:'k', label:'一覧表作成（管理職4月・一般職5月）', tools:['Excel']},
-    {lane:'k', label:'賃金更改資料作成', tools:['Excel']},
-    {lane:'k', label:'資料送付', tools:['メール']},
-    {lane:'i', label:'データ取込・結果送付', tools:['メール']},
-    {lane:'k', label:'取込結果確認', tools:['NET-J']},
-    {lane:'i', label:'取込結果を送付', tools:[]},
-    {lane:'k', label:'賃金辞令作成資料を外部委託へ送付', tools:['メール']},
+  {id:'g16',no:'⑯',name:'賃金更改',freq:'年次',cat:'b',steps:[
+    {lane:'n',label:'組織役職別職務給一覧表等を送付',tools:['メール']},
+    {lane:'k',label:'一覧表作成（管理職4月・一般職5月）',tools:['Excel']},
+    {lane:'k',label:'賃金更改資料作成',tools:['Excel']},
+    {lane:'k',label:'資料送付',tools:['メール']},
+    {lane:'i',label:'データ取込・結果送付',tools:['メール']},
+    {lane:'k',label:'取込結果確認',tools:['NET-J']},
+    {lane:'i',label:'取込結果を送付',tools:[]},
+    {lane:'k',label:'賃金辞令作成資料を外部委託へ送付',tools:['メール']},
   ]},
-  {id:'g17', no:'⑰', name:'契約更新有無確認', freq:'随時・四半期', cat:'c', steps:[
-    {lane:'k', label:'更新対象者抽出', tools:['NET-J','Excel']},
-    {lane:'k', label:'更新有無確認依頼', tools:['メール']},
-    {lane:'n', label:'更新有無を確認・検討', tools:[]},
-    {lane:'k', label:'回答受領', tools:['メール']},
-    {lane:'n', label:'更新有無を回答', tools:['メール']},
-    {lane:'k', label:'次手続きへ連携（⑱または⑲）', tools:['メール']},
+  {id:'g17',no:'⑰',name:'契約更新有無確認',freq:'随時・四半期',cat:'c',steps:[
+    {lane:'k',label:'更新対象者抽出',tools:['NET-J','Excel']},
+    {lane:'k',label:'更新有無確認依頼',tools:['メール']},
+    {lane:'n',label:'更新有無を確認・検討',tools:[]},
+    {lane:'k',label:'回答受領',tools:['メール']},
+    {lane:'n',label:'更新有無を回答',tools:['メール']},
+    {lane:'k',label:'次手続きへ連携（⑱または⑲）',tools:['メール']},
   ]},
-  {id:'g18', no:'⑱', name:'労働契約更新', freq:'随時・四半期', cat:'c', steps:[
-    {lane:'k', label:'労働契約書作成', tools:['Excel/Word','共有フォルダ']},
-    {lane:'k', label:'契約書送付（更新日7日前まで）', tools:['メール']},
-    {lane:'n', label:'労働契約書を受領', tools:[]},
+  {id:'g18',no:'⑱',name:'労働契約更新',freq:'随時・四半期',cat:'c',steps:[
+    {lane:'k',label:'労働契約書作成',tools:['Excel/Word','共有フォルダ']},
+    {lane:'k',label:'契約書送付（更新日7日前まで）',tools:['メール']},
+    {lane:'n',label:'労働契約書を受領',tools:[]},
   ]},
-  {id:'g19', no:'⑲', name:'新規労働契約', freq:'随時・四半期', cat:'c', steps:[
-    {lane:'k', label:'労働契約書作成', tools:['Excel/Word','共有フォルダ']},
-    {lane:'k', label:'契約書送付（入社日7日前まで）', tools:['メール']},
-    {lane:'n', label:'労働契約書を受領', tools:[]},
-    {lane:'k', label:'個人コード変更連絡（再雇用時）', tools:['NET-J','メール']},
+  {id:'g19',no:'⑲',name:'新規労働契約',freq:'随時・四半期',cat:'c',steps:[
+    {lane:'k',label:'労働契約書作成',tools:['Excel/Word','共有フォルダ']},
+    {lane:'k',label:'契約書送付（入社日7日前まで）',tools:['メール']},
+    {lane:'n',label:'労働契約書を受領',tools:[]},
+    {lane:'k',label:'個人コード変更連絡（再雇用時）',tools:['NET-J','メール']},
   ]},
 ]
 
-/* ---- SVG flowchart renderer ---- */
-const COL = {k:0, n:1, i:2}
-const LANE_W = 180
-const BOX_H = 44
-const BOX_W = 160
-const BOX_PAD = 10
-const ROW_H = 66
-const SVG_W = LANE_W * 3
-const LANE_CX = [LANE_W*0+LANE_W/2, LANE_W*1+LANE_W/2, LANE_W*2+LANE_W/2]
-
-function laneColor(lane){
-  if(lane==='k') return {fill:C.kFill,stroke:C.kBorder,text:C.kText}
-  if(lane==='n') return {fill:C.nFill,stroke:C.nBorder,text:C.nText}
-  return {fill:C.iFill,stroke:C.iBorder,text:C.iText}
-}
-
-function wrapText(text, maxW){
-  const words = text.split('')
-  const lines = []
-  let line = ''
-  const charW = 6.5
-  const maxChars = Math.floor(maxW / charW)
-  for(let i=0;i<words.length;i++){
-    if((line+words[i]).length <= maxChars){
-      line += words[i]
-    } else {
-      if(line) lines.push(line)
-      line = words[i]
-    }
-  }
-  if(line) lines.push(line)
+function lc(l){return l==='k'?{fill:C.kFill,stroke:C.kBorder,text:C.kText}:l==='n'?{fill:C.nFill,stroke:C.nBorder,text:C.nText}:{fill:C.iFill,stroke:C.iBorder,text:C.iText}}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function wrap(t,mw){
+  const mc=Math.floor(mw/6.5),words=t.split(''),lines=[],c=6.5
+  let ln=''
+  for(const w of words){if((ln+w).length<=mc){ln+=w}else{if(ln)lines.push(ln);ln=w}}
+  if(ln)lines.push(ln)
   return lines
 }
+function arrow(x,y){return `<polygon points="${x},${y} ${x-5},${y-7} ${x+5},${y-7}" fill="${C.arrow}"/>`}
 
 function buildSVG(flow){
-  const steps = flow.steps
-  const n = steps.length
-  const H = n * ROW_H + 20
-  let svg = `<svg viewBox="0 0 ${SVG_W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;overflow:visible">`
+  const s=flow.steps,n=s.length,H=n*ROW_H+24
+  let svg=`<svg viewBox="0 0 ${SVG_W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%">`
+  svg+=`<rect x="0" y="0" width="${LANE_W}" height="${H}" fill="#EFF6FF" opacity="0.4"/>`
+  svg+=`<rect x="${LANE_W}" y="0" width="${LANE_W}" height="${H}" fill="#F0FDF4" opacity="0.4"/>`
+  svg+=`<rect x="${LANE_W*2}" y="0" width="${LANE_W}" height="${H}" fill="#FFFBEB" opacity="0.4"/>`
+  svg+=`<line x1="${LANE_W}" y1="0" x2="${LANE_W}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
+  svg+=`<line x1="${LANE_W*2}" y1="0" x2="${LANE_W*2}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
 
-  // Lane backgrounds
-  svg += `<rect x="0" y="0" width="${LANE_W}" height="${H}" fill="#F0F7FF" opacity="0.5"/>`
-  svg += `<rect x="${LANE_W}" y="0" width="${LANE_W}" height="${H}" fill="#F0FBF5" opacity="0.5"/>`
-  svg += `<rect x="${LANE_W*2}" y="0" width="${LANE_W}" height="${H}" fill="#FFFBF0" opacity="0.5"/>`
-  // Lane dividers
-  svg += `<line x1="${LANE_W}" y1="0" x2="${LANE_W}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
-  svg += `<line x1="${LANE_W*2}" y1="0" x2="${LANE_W*2}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
+  const cy=s.map((_,i)=>16+i*ROW_H+BOX_H/2)
+  const cx=s.map(st=>LANE_CX[COL[st.lane]])
 
-  // Compute box center Y for each step
-  const cy = steps.map((_,i)=> 16 + i*ROW_H + BOX_H/2)
-  const cx = steps.map(s=> LANE_CX[COL[s.lane]])
-
-  // Draw connector lines first (under boxes)
   for(let i=0;i<n-1;i++){
-    const x1=cx[i], y1=cy[i], x2=cx[i+1], y2=cy[i+1]
-    const by1 = y1 + BOX_H/2  // bottom of current box
-    const ty2 = y2 - BOX_H/2  // top of next box
-
+    const x1=cx[i],y1=cy[i]+BOX_H/2,x2=cx[i+1],y2=cy[i+1]-BOX_H/2
     if(x1===x2){
-      // Same lane: straight vertical line
-      svg += `<line x1="${x1}" y1="${by1}" x2="${x2}" y2="${ty2}" stroke="${C.line}" stroke-width="1.5"/>`
-      svg += arrowHead(x2, ty2, 'down')
+      svg+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${C.line}" stroke-width="1.5"/>`
     } else {
-      // Different lane: elbow connector
-      const midY = (by1 + ty2) / 2
-      svg += `<polyline points="${x1},${by1} ${x1},${midY} ${x2},${midY} ${x2},${ty2}" fill="none" stroke="${C.line}" stroke-width="1.5" stroke-linejoin="round"/>`
-      svg += arrowHead(x2, ty2, 'down')
+      const mid=(y1+y2)/2
+      svg+=`<polyline points="${x1},${y1} ${x1},${mid} ${x2},${mid} ${x2},${y2}" fill="none" stroke="${C.line}" stroke-width="1.5" stroke-linejoin="round"/>`
     }
+    svg+=arrow(x2,y2)
   }
 
-  // Draw boxes on top
   for(let i=0;i<n;i++){
-    const s = steps[i]
-    const col = laneColor(s.lane)
-    const bx = cx[i] - BOX_W/2
-    const by = cy[i] - BOX_H/2
-
-    svg += `<rect x="${bx}" y="${by}" width="${BOX_W}" height="${BOX_H}" rx="5" fill="${col.fill}" stroke="${col.stroke}" stroke-width="1"/>`
-
-    // Label
-    const lines = wrapText(s.label, BOX_W - 16)
-    const lineH = 13
-    const totalH = lines.length * lineH
-    const startY = by + (BOX_H - totalH)/2 + lineH * 0.8
+    const st=s[i],col=lc(st.lane)
+    const bx=cx[i]-BOX_W/2,by=cy[i]-BOX_H/2
+    svg+=`<rect x="${bx}" y="${by}" width="${BOX_W}" height="${BOX_H}" rx="5" fill="${col.fill}" stroke="${col.stroke}" stroke-width="1"/>`
+    const lines=wrap(st.label,BOX_W-14),lh=13,th=lines.length*lh
+    const sy=by+(BOX_H-th)/2+lh*0.85
     lines.forEach((ln,li)=>{
-      svg += `<text x="${cx[i]}" y="${startY + li*lineH}" text-anchor="middle" font-size="10.5" font-family="sans-serif" fill="${col.text}" font-weight="500">${escXml(ln)}</text>`
+      svg+=`<text x="${cx[i]}" y="${sy+li*lh}" text-anchor="middle" font-size="10.5" font-family="sans-serif" fill="${col.text}" font-weight="500">${esc(ln)}</text>`
     })
-
-    // Tool tags below box
-    if(s.tools.length>0){
-      let tx = cx[i] - (s.tools.length*36)/2
-      s.tools.forEach(t=>{
-        const tw = t.length*6+10
-        tx = Math.max(bx+2, Math.min(bx+BOX_W-tw-2, tx))
-        svg += `<rect x="${tx}" y="${by+BOX_H+2}" width="${tw}" height="12" rx="3" fill="${col.stroke}" opacity="0.25"/>`
-        svg += `<text x="${tx+tw/2}" y="${by+BOX_H+10}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${col.text}">${escXml(t)}</text>`
-        tx += tw + 4
+    if(st.tools.length){
+      let tx=cx[i]-(st.tools.reduce((a,t)=>a+t.length*6+12,0)+st.tools.length*3)/2
+      st.tools.forEach(t=>{
+        const tw=t.length*6+10
+        tx=Math.max(bx+2,tx)
+        svg+=`<rect x="${tx}" y="${by+BOX_H+2}" width="${tw}" height="12" rx="3" fill="${col.stroke}" opacity="0.3"/>`
+        svg+=`<text x="${tx+tw/2}" y="${by+BOX_H+10}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${col.text}">${esc(t)}</text>`
+        tx+=tw+4
       })
     }
   }
-
-  svg += '</svg>'
+  svg+='</svg>'
   return svg
 }
 
-function arrowHead(x, y, dir){
-  if(dir==='down'){
-    return `<polygon points="${x},${y} ${x-5},${y-7} ${x+5},${y-7}" fill="${C.arrow}"/>`
-  }
-  return ''
-}
-
-function escXml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
-
-/* Build table rows for a flow */
-function buildFlowRow(flow, tbody){
-  const svg = buildSVG(flow)
-  const n = flow.steps.length
-  const H = n * ROW_H + 20
-
-  const tr = document.createElement('tr')
-  tr.id = flow.id
-  tr.className = 'flow-row'
-  tr.style.cssText = 'border-top:0.5px solid var(--color-border-secondary)'
-
-  // gyomu cell
-  const gTd = document.createElement('td')
-  gTd.className = 'g-cell'
-  gTd.innerHTML = `<div class="g-no">${flow.no}</div><div class="g-name">${flow.name}</div><span class="g-freq">${flow.freq}</span>`
-  tr.appendChild(gTd)
-
-  // svg spanning 3 cols
-  const svgTd = document.createElement('td')
-  svgTd.colSpan = 3
-  svgTd.style.cssText = 'padding:0;border:none'
-  svgTd.innerHTML = svg
-  tr.appendChild(svgTd)
-
+function addFlowRow(flow,tbody){
+  const tr=document.createElement('tr')
+  tr.id=flow.id
+  tr.style.cssText='border-top:0.5px solid var(--color-border-secondary)'
+  const g=document.createElement('td')
+  g.className='g-cell'
+  g.innerHTML=`<div class="g-no">${flow.no}</div><div class="g-name">${flow.name}</div><span class="g-freq">${flow.freq}</span>`
+  tr.appendChild(g)
+  const sd=document.createElement('td')
+  sd.colSpan=3
+  sd.style.cssText='padding:0;border:none'
+  sd.innerHTML=buildSVG(flow)
+  tr.appendChild(sd)
   tbody.appendChild(tr)
-
-  // separator
-  const sep = document.createElement('tr')
-  sep.className = 'flow-sep'
-  sep.innerHTML = '<td colspan="4" style="height:1px;padding:0;background:var(--color-border-tertiary)"></td>'
+  const sep=document.createElement('tr')
+  sep.className='flow-sep'
+  sep.innerHTML='<td colspan="4"></td>'
   tbody.appendChild(sep)
 }
 
-/* Init tables */
 ;['a','b','c'].forEach(cat=>{
-  const tbody = document.getElementById('tbody-'+cat)
-  FLOWS.filter(f=>f.cat===cat).forEach(f=>buildFlowRow(f, tbody))
+  FLOWS.filter(f=>f.cat===cat).forEach(f=>addFlowRow(f,document.getElementById('tbody-'+cat)))
 })
 
-/* ---- Navigation ---- */
-let activeCat = null
+/* ---- Nav ---- */
+let activeCat=null
 
-function buildCatNav(){
-  const catRow = document.getElementById('catRow')
-  catRow.innerHTML = ''
-  Object.entries(CATS).forEach(([cat, info])=>{
-    const b = document.createElement('button')
-    b.className = 'cat-btn '+cat+(activeCat===cat?' on':'')
-    b.textContent = info.label
-    b.onclick = ()=>toggleCat(cat)
-    b.id = 'cat-'+cat
-    catRow.appendChild(b)
+function buildCatRow(){
+  const row=document.getElementById('catRow')
+  row.innerHTML=''
+  Object.entries(CATS).forEach(([cat,info])=>{
+    const b=document.createElement('button')
+    b.className='cat-btn '+cat+(activeCat===cat?' on':'')
+    b.id='cat-'+cat
+    b.textContent=info.label
+    b.onclick=()=>toggleCat(cat)
+    row.appendChild(b)
   })
 }
 
-function buildSubNav(cat){
-  const subRow = document.getElementById('subRow')
-  subRow.innerHTML = ''
+function buildSubRow(cat){
+  const row=document.getElementById('subRow')
+  row.innerHTML=''
   FLOWS.filter(f=>f.cat===cat).forEach(f=>{
-    const b = document.createElement('button')
-    b.className = 'sub-btn'
-    b.id = 'sub-'+f.id
-    b.textContent = f.no+' '+f.name
-    b.onclick = ()=>{ document.getElementById(f.id).scrollIntoView({behavior:'smooth',block:'start'}) }
-    subRow.appendChild(b)
+    const b=document.createElement('button')
+    b.className='sub-btn'
+    b.id='sub-'+f.id
+    b.textContent=f.no+' '+f.name
+    b.onclick=()=>scrollTo(f.id)
+    row.appendChild(b)
   })
+}
+
+function scrollTo(id){
+  const el=document.getElementById(id)
+  if(!el) return
+  const navH=document.getElementById('navWrap').offsetHeight
+  const top=el.getBoundingClientRect().top+window.scrollY-navH-4
+  window.scrollTo({top,behavior:'smooth'})
 }
 
 function toggleCat(cat){
-  const subWrap = document.getElementById('subWrap')
+  const wrap=document.getElementById('subWrap')
   if(activeCat===cat){
     activeCat=null
-    subWrap.classList.remove('open')
+    wrap.classList.remove('open')
     document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'))
     return
   }
   activeCat=cat
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'))
-  document.getElementById('cat-'+cat).classList.add('on')
-  buildSubNav(cat)
-  subWrap.classList.add('open')
+  buildCatRow()
+  buildSubRow(cat)
+  wrap.classList.add('open')
 }
 
-buildCatNav()
+buildCatRow()
 
-/* ---- Scroll observation per flow row ---- */
-const obs = new IntersectionObserver(entries=>{
+/* ---- Scroll sync ---- */
+const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(!e.isIntersecting) return
-    const f = FLOWS.find(x=>x.id===e.target.id)
+    const f=FLOWS.find(x=>x.id===e.target.id)
     if(!f) return
-
-    // Update cat nav
-    if(f.cat !== activeCat){
-      activeCat = f.cat
-      document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'))
-      const cb = document.getElementById('cat-'+f.cat)
-      if(cb) cb.classList.add('on')
-      buildSubNav(f.cat)
+    if(f.cat!==activeCat){
+      activeCat=f.cat
+      buildCatRow()
+      buildSubRow(f.cat)
       document.getElementById('subWrap').classList.add('open')
     }
-
-    // Update sub nav
     document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('on','a','b','c'))
-    const sb = document.getElementById('sub-'+f.id)
-    if(sb) sb.classList.add('on', f.cat)
+    const sb=document.getElementById('sub-'+f.id)
+    if(sb) sb.classList.add('on',f.cat)
   })
-}, {threshold:0.05, rootMargin:'-40px 0px -70% 0px'})
+},{threshold:0.05,rootMargin:'-40px 0px -70% 0px'})
 
-FLOWS.forEach(f=>{ const el=document.getElementById(f.id); if(el) obs.observe(el) })
+FLOWS.forEach(f=>{const el=document.getElementById(f.id);if(el)obs.observe(el)})
 </script>

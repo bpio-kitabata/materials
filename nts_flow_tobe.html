@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTS 労務業務フロー（To-Be / Jinjer移行後）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN',sans-serif}
+.shell{display:flex;flex-direction:column;height:100vh}
+.nav-wrap{flex-shrink:0;background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 16px 8px}
+.nav-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav-title{font-size:12px;font-weight:600;color:#1e293b}
+.tobe-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:#0F6E56;color:#fff}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;align-items:center}
+.leg{display:flex;align-items:center;gap:5px;font-size:10px;color:#64748b}
+.leg-swatch{width:32px;height:16px;border-radius:4px;flex-shrink:0;position:relative;border:1px solid #cbd5e1}
+.leg-swatch.chg{border:2.5px solid #BA7517;box-shadow:0 0 0 1.5px #BA751730}
+.leg-swatch.del{border:1px solid #cbd5e1;opacity:0.45}
+.leg-swatch.del::after{content:'';position:absolute;top:50%;left:4px;right:4px;height:1.5px;background:#94a3b8;transform:translateY(-50%)}
+.leg-swatch.add{border:2.5px solid #3B6D11;box-shadow:0 0 0 1.5px #3B6D1130}
+.leg-swatch.tbd{border:2.5px solid #7F77DD;box-shadow:0 0 0 1.5px #7F77DD30}
+.leg-swatch-inner{width:100%;height:100%;background:#EFF6FF;border-radius:3px}
+.cat-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.cat-btn{padding:5px 14px;border-radius:99px;border:1.5px solid;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent}
+.cat-btn.a{border-color:#185FA5;color:#185FA5}.cat-btn.a.on{background:#185FA5;color:#fff}
+.cat-btn.b{border-color:#0F6E56;color:#0F6E56}.cat-btn.b.on{background:#0F6E56;color:#fff}
+.cat-btn.c{border-color:#854F0B;color:#854F0B}.cat-btn.c.on{background:#854F0B;color:#fff}
+.sub-wrap{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.sub-wrap.open{max-height:200px;margin-top:6px}
+.sub-row{display:flex;gap:4px;flex-wrap:wrap;padding-top:6px;border-top:1px solid #e2e8f0}
+.sub-btn{padding:3px 9px;border-radius:99px;border:1px solid #cbd5e1;font-size:11px;cursor:pointer;background:transparent;color:#64748b;transition:all .15s;white-space:nowrap}
+.sub-btn:hover{background:#f1f5f9}
+.sub-btn.on.a{background:#E6F1FB;border-color:#185FA5;color:#0C447C;font-weight:600}
+.sub-btn.on.b{background:#E1F5EE;border-color:#0F6E56;color:#085041;font-weight:600}
+.sub-btn.on.c{background:#FAEEDA;border-color:#854F0B;color:#633806;font-weight:600}
+.scroller{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.content{padding:12px 16px 60px}
+.sec{margin-bottom:24px}
+.sec-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;margin-bottom:10px}
+.sec-hdr.a{background:#E6F1FB;border-left:4px solid #185FA5}
+.sec-hdr.b{background:#E1F5EE;border-left:4px solid #0F6E56}
+.sec-hdr.c{background:#FAEEDA;border-left:4px solid #854F0B}
+.sec-ttl{font-size:13px;font-weight:600}
+.sec-ttl.a{color:#0C447C}.sec-ttl.b{color:#085041}.sec-ttl.c{color:#633806}
+.sec-badge{font-size:11px;padding:2px 8px;border-radius:99px}
+.sec-badge.a{background:#B5D4F4;color:#0C447C}
+.sec-badge.b{background:#9FE1CB;color:#085041}
+.sec-badge.c{background:#FAC775;color:#633806}
+.ftbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.ftbl th{padding:8px;font-size:11px;font-weight:600;text-align:center;border:1px solid #cbd5e1}
+.th-g{background:#f8fafc;color:#64748b;width:96px}
+.th-k{background:#185FA5;color:#fff}
+.th-n{background:#0F6E56;color:#fff}
+.th-i{background:#854F0B;color:#fff}
+.ftbl td{border-right:1px solid #cbd5e1;border-left:1px solid #cbd5e1;vertical-align:top;padding:0}
+.g-cell{background:#f8fafc;padding:10px 8px;vertical-align:top;border-top:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1}
+.g-no{font-size:11px;color:#94a3b8;margin-bottom:3px}
+.g-name{font-size:12px;font-weight:600;line-height:1.4;margin-bottom:4px;color:#1e293b}
+.g-freq{display:inline-block;font-size:10px;padding:2px 6px;border-radius:99px;background:#f1f5f9;color:#64748b}
+.flow-sep td{height:2px;padding:0;background:#e2e8f0}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="nav-wrap">
+    <div class="nav-top">
+      <span class="nav-title">NTS 労務業務フロー</span>
+      <span class="tobe-badge">To-Be / Jinjer移行後</span>
+    </div>
+    <div class="legend">
+      <div class="leg">
+        <div class="leg-swatch chg"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>変更
+      </div>
+      <div class="leg">
+        <div class="leg-swatch del"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>廃止
+      </div>
+      <div class="leg">
+        <div class="leg-swatch add"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>新規追加
+      </div>
+      <div class="leg">
+        <div class="leg-swatch tbd"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>要確認
+      </div>
+      <div class="leg">
+        <div class="leg-swatch" style="border:1px solid #cbd5e1"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>変わらず
+      </div>
+    </div>
+    <div class="cat-row" id="catRow"></div>
+    <div class="sub-wrap" id="subWrap"><div class="sub-row" id="subRow"></div></div>
+  </div>
+  <div class="scroller" id="scroller">
+    <div class="content">
+      <div id="sa" class="sec" data-cat="a">
+        <div class="sec-hdr a"><span class="sec-ttl a">従業員情報管理</span><span class="sec-badge a">① 〜 ⑤</span></div>
+        <table class="ftbl"><thead><tr><th class="th-g">業務</th><th class="th-k">BPIO</th><th class="th-n">NTS担当者</th><th class="th-i">IHIBS担当者</th></tr></thead><tbody id="tbody-a"></tbody></table>
+      </div>
+      <div id="sb" class="sec" data-cat="b">
+        <div class="sec-hdr b"><span class="sec-ttl b">勤怠・給与計算</span><span class="sec-badge b">⑥ 〜 ⑯</span></div>
+        <table class="ftbl"><thead><tr><th class="th-g">業務</th><th class="th-k">BPIO</th><th class="th-n">NTS担当者</th><th class="th-i">IHIBS担当者</th></tr></thead><tbody id="tbody-b"></tbody></table>
+      </div>
+      <div id="sc" class="sec" data-cat="c">
+        <div class="sec-hdr c"><span class="sec-ttl c">有期雇用管理</span><span class="sec-badge c">⑰ 〜 ⑲</span></div>
+        <table class="ftbl"><thead><tr><th class="th-g">業務</th><th class="th-k">BPIO</th><th class="th-n">NTS担当者</th><th class="th-i">IHIBS担当者</th></tr></thead><tbody id="tbody-c"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const C={
+  kFill:'#EFF6FF',kBorder:'#93C5FD',kText:'#1E40AF',
+  nFill:'#F0FDF4',nBorder:'#86EFAC',nText:'#166534',
+  iFill:'#FFFBEB',iBorder:'#FCD34D',iText:'#92400E',
+  line:'#94A3B8',arrow:'#64748B'
+}
+// オーバーレイのみ定義。ボックス自体の色はAs-Is同様lane色を使う
+const OVERLAY={
+  keep:{outerStroke:null,outerW:0,badge:null,dimOpacity:1,strike:false},
+  chg: {outerStroke:'#BA7517',outerW:2.5,badge:{text:'変',bg:'#FAEEDA',color:'#633806'},dimOpacity:1,strike:false},
+  add: {outerStroke:'#3B6D11',outerW:2.5,badge:{text:'新',bg:'#C0DD97',color:'#173404'},dimOpacity:1,strike:false},
+  del: {outerStroke:null,outerW:0,badge:{text:'廃',bg:'#f1f5f9',color:'#94a3b8'},dimOpacity:0.38,strike:true},
+  tbd: {outerStroke:'#7F77DD',outerW:2.5,badge:{text:'確',bg:'#CECBF6',color:'#26215C'},dimOpacity:1,strike:false},
+}
+const LANE_W=180,BOX_H=44,BOX_W=160,ROW_H=68,SVG_W=LANE_W*3
+const LANE_CX=[LANE_W/2,LANE_W+LANE_W/2,LANE_W*2+LANE_W/2]
+const COL={k:0,n:1,i:2}
+const CATS={a:{label:'従業員情報管理'},b:{label:'勤怠・給与計算'},c:{label:'有期雇用管理'}}
+
+const FLOWS=[
+  {id:'g01',no:'①',name:'入社登録',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'入社資料一式を送付',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'資料受領',tools:['メール','jinjer入社処理'],diff:'chg'},
+    {lane:'k',label:'書類確認・jinjer入社処理で登録',tools:['jinjer入社処理'],diff:'chg'},
+    {lane:'k',label:'チェックリスト準備',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'jinjerへ従業員情報登録',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'登録完了連絡',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'完了報告を受領',tools:[],diff:'keep'},
+  ]},
+  {id:'g02',no:'②',name:'退職登録',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'退職申請をJinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'承認・退職情報を自動反映確認',tools:['jinjer WF'],diff:'chg'},
+  ]},
+  {id:'g03',no:'③',name:'正社員登用',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'jinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'従業員情報変更登録',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'登録完了連絡',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'完了報告を受領',tools:[],diff:'keep'},
+  ]},
+  {id:'g04',no:'④',name:'組織改訂',freq:'随時・年度末',cat:'a',steps:[
+    {lane:'n',label:'組織図・部門コード等を送付',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'組織改訂資料受領',tools:['メール','共有フォルダ'],diff:'keep'},
+    {lane:'k',label:'組織変更データ作成',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'結果内容確認依頼',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'n',label:'内容確認・回答',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'回答受領',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'従業員所属変更データ作成・取込',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'結果内容確認依頼（2回目）',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'作業完了報告',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'完了報告を受領',tools:[],diff:'keep'},
+  ]},
+  {id:'g05',no:'⑤',name:'その他変更',freq:'随時',cat:'a',steps:[
+    {lane:'n',label:'本人or上長がjinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'情報変更登録',tools:['jinjer WF','jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'登録完了連絡',tools:['jinjer WF','メール'],diff:'chg'},
+    {lane:'n',label:'完了報告を受領（WF回覧）',tools:[],diff:'chg'},
+  ]},
+  {id:'g06',no:'⑥',name:'勤怠計算',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'賃金日程確認',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'勤怠投入状況確認',tools:['Jinjer勤怠'],diff:'chg'},
+    {lane:'k',label:'未入力者への督促',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'督促受領・勤怠を投入',tools:[],diff:'keep'},
+    {lane:'k',label:'給与データ出力',tools:['iS-Time','Excel'],diff:'del'},
+    {lane:'k',label:'給与データ確認・修正',tools:['Excel','NET-J'],diff:'del'},
+    {lane:'k',label:'勤怠計算依頼・データ送付',tools:['メール'],diff:'del'},
+    {lane:'k',label:'計算結果確認',tools:['Excel'],diff:'del'},
+    {lane:'k',label:'時間外データ作成・送付',tools:['Excel','メール'],diff:'del'},
+  ]},
+  {id:'g07',no:'⑦',name:'交通費データ作成',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'賃金予定表受領',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'交通費申請（本人がWFで申請）',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'交通費関連データ受領',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'定期券代確認',tools:['Yahoo乗換','ジョルダン'],diff:'keep'},
+    {lane:'n',label:'ガソリン代申請（本人がWFで申請）',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'ガソリン代確認',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'支給控除データ作成',tools:['Excel投入表'],diff:'del'},
+    {lane:'k',label:'支給控除データ送付',tools:['メール'],diff:'del'},
+  ]},
+  {id:'g08',no:'⑧',name:'その他支給控除',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'賃金予定表受領',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'財形・融資・社宅等のデータを送付',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'給与関連データ受領',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'支給控除データ反映',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'支給控除データ送付',tools:['メール'],diff:'del'},
+  ]},
+  {id:'g09',no:'⑨',name:'月次給与計算',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'計算結果確認（支給控除）',tools:['メール','Excel'],diff:'del'},
+    {lane:'k',label:'NET-J修正登録',tools:['NET-J'],diff:'del'},
+    {lane:'k',label:'賃金計算',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'賃金計算結果確認',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'賃金再計算（必要時）',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'給与データ締め処理',tools:['Jinjer給与'],diff:'add'},
+  ]},
+  {id:'g10',no:'⑩',name:'給与後処理①各部署書類',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'給与データを出力',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'各部署用書類作成',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'賃金明細出力依頼',tools:['メール'],diff:'del'},
+  ]},
+  {id:'g11',no:'⑪',name:'給与後処理②各種資料送付',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'給与振込・住民税納付データ出力',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'労務構成表作成',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'各種資料送付',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'各種資料を受領',tools:[],diff:'keep'},
+  ]},
+  {id:'g12',no:'⑫',name:'給与後処理③月変者確認',freq:'月次',cat:'b',steps:[
+    {lane:'k',label:'次月用組合控除データ送付',tools:['Jinjer人事労務','メール'],diff:'tbd'},
+    {lane:'k',label:'月変算定・対象者確認',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'月変者報告',tools:['Jinjer給与','メール'],diff:'chg'},
+    {lane:'n',label:'月変者報告を受領',tools:[],diff:'chg'},
+  ]},
+  {id:'g13',no:'⑬',name:'一時金計算',freq:'年次（賞与）',cat:'b',steps:[
+    {lane:'k',label:'出勤係数確認',tools:['Jinjer勤怠'],diff:'chg'},
+    {lane:'k',label:'支給額計算',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'社内融資計算',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'Jinjer給与に取込・賞与計算実施',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'一時金データ送付',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'一時金データを受領',tools:[],diff:'keep'},
+  ]},
+  {id:'g14',no:'⑭',name:'臨時一時金計算',freq:'随時',cat:'b',steps:[
+    {lane:'k',label:'支給有無確認・評価依頼',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'確認・評価査定を回答',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'一括取込シート作成',tools:['jinjerインポート'],diff:'chg'},
+    {lane:'k',label:'IHIBSへ取込シート送付',tools:['メール'],diff:'del'},
+    {lane:'k',label:'NET-Jマスタ修正',tools:['NET-J'],diff:'del'},
+    {lane:'k',label:'臨時一時金計算結果確認',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'臨時一時金明細書出力',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'確定データ財務部提出',tools:['Excel','メール'],diff:'keep'},
+  ]},
+  {id:'g15',no:'⑮',name:'退職金計算',freq:'随時',cat:'b',steps:[
+    {lane:'n',label:'退職願等を送付',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'退職者情報確認・対象可否判定',tools:['Jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'一括取込シート作成',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'Jinjer退職金へ一括取込',tools:['Jinjer退職金'],diff:'chg'},
+    {lane:'k',label:'退職金計算結果確認',tools:['Jinjer退職金'],diff:'chg'},
+    {lane:'k',label:'退職金計算を確定',tools:['Jinjer退職金'],diff:'chg'},
+    {lane:'k',label:'住民税資料作成',tools:['Excel'],diff:'keep'},
+  ]},
+  {id:'g16',no:'⑯',name:'賃金更改',freq:'年次',cat:'b',steps:[
+    {lane:'n',label:'組織役職別職務給一覧表等を送付',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'管理職一覧表作成（4月）',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'社内資料受領',tools:['メール','共有フォルダ'],diff:'keep'},
+    {lane:'k',label:'jinjerインポート用FMT作成・取込',tools:['jinjerインポート'],diff:'chg'},
+    {lane:'k',label:'賃金更改資料作成',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'賃金更改資料送付',tools:['メール'],diff:'chg'},
+    {lane:'k',label:'一括取込結果確認',tools:['jinjerインポート','人事労務'],diff:'chg'},
+    {lane:'k',label:'賃金辞令作成資料作成',tools:['Excel'],diff:'keep'},
+    {lane:'k',label:'ナスカクリエイトへ依頼',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'一般職FMT作成・取込（5月）',tools:['jinjerインポート'],diff:'chg'},
+    {lane:'k',label:'一般職取込結果確認',tools:['jinjer人事労務'],diff:'chg'},
+  ]},
+  {id:'g17',no:'⑰',name:'契約更新有無確認',freq:'随時・四半期',cat:'c',steps:[
+    {lane:'k',label:'更新対象者抽出',tools:['Jinjer人事労務','Excel'],diff:'chg'},
+    {lane:'k',label:'更新有無確認依頼',tools:['メール'],diff:'keep'},
+    {lane:'n',label:'更新有無を確認・回答',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'回答受領',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'次手続きへ連携（⑱または⑲）',tools:['メール'],diff:'keep'},
+  ]},
+  {id:'g18',no:'⑱',name:'労働契約更新',freq:'随時・四半期',cat:'c',steps:[
+    {lane:'k',label:'労働契約書作成・配布',tools:['jinjer人事労務','jinjer書類送付'],diff:'chg'},
+    {lane:'n',label:'労働契約書を受領',tools:[],diff:'keep'},
+    {lane:'k',label:'メールで送付',tools:['メール'],diff:'del'},
+  ]},
+  {id:'g19',no:'⑲',name:'新規労働契約',freq:'随時・四半期',cat:'c',steps:[
+    {lane:'k',label:'労働契約書作成・配布',tools:['jinjer人事労務','jinjer書類送付'],diff:'chg'},
+    {lane:'n',label:'労働契約書を受領',tools:[],diff:'keep'},
+    {lane:'k',label:'メールで送付',tools:['メール'],diff:'del'},
+    {lane:'k',label:'個人コード変更連絡（再雇用時）',tools:['メール'],diff:'tbd'},
+  ]},
+]
+
+function lc(l){return l==='k'?{fill:C.kFill,stroke:C.kBorder,text:C.kText}:l==='n'?{fill:C.nFill,stroke:C.nBorder,text:C.nText}:{fill:C.iFill,stroke:C.iBorder,text:C.iText}}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function wrap(t,mw){const mc=Math.floor(mw/6.5),words=t.split(''),lines=[];let ln='';for(const w of words){if((ln+w).length<=mc){ln+=w}else{if(ln)lines.push(ln);ln=w}}if(ln)lines.push(ln);return lines}
+
+function buildSVG(flow){
+  const s=flow.steps,n=s.length,H=n*ROW_H+24
+  const TAG_H=14
+  let svg=`<svg viewBox="0 0 ${SVG_W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%">`
+
+  // lane backgrounds
+  svg+=`<rect x="0" y="0" width="${LANE_W}" height="${H}" fill="#EFF6FF" opacity="0.4"/>`
+  svg+=`<rect x="${LANE_W}" y="0" width="${LANE_W}" height="${H}" fill="#F0FDF4" opacity="0.4"/>`
+  svg+=`<rect x="${LANE_W*2}" y="0" width="${LANE_W}" height="${H}" fill="#FFFBEB" opacity="0.4"/>`
+  svg+=`<line x1="${LANE_W}" y1="0" x2="${LANE_W}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
+  svg+=`<line x1="${LANE_W*2}" y1="0" x2="${LANE_W*2}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
+
+  const cy=s.map((_,i)=>16+i*ROW_H+BOX_H/2)
+  const cx=s.map(st=>LANE_CX[COL[st.lane]])
+
+  // connectors
+  for(let i=0;i<n-1;i++){
+    const bothDel=s[i].diff==='del'&&s[i+1].diff==='del'
+    const op=bothDel?0.25:1
+    const lcolor=bothDel?'#cbd5e1':C.line
+    const x1=cx[i],y1=cy[i]+BOX_H/2,x2=cx[i+1],y2=cy[i+1]-BOX_H/2
+    if(x1===x2){
+      svg+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${lcolor}" stroke-width="1.5" opacity="${op}"/>`
+    } else {
+      const mid=(y1+y2)/2
+      svg+=`<polyline points="${x1},${y1} ${x1},${mid} ${x2},${mid} ${x2},${y2}" fill="none" stroke="${lcolor}" stroke-width="1.5" stroke-linejoin="round" opacity="${op}"/>`
+    }
+    const ac=bothDel?'#cbd5e1':C.arrow
+    svg+=`<polygon points="${x2},${y2} ${x2-5},${y2-7} ${x2+5},${y2-7}" fill="${ac}" opacity="${op}"/>`
+  }
+
+  // boxes + overlays
+  for(let i=0;i<n;i++){
+    const st=s[i],col=lc(st.lane),ov=OVERLAY[st.diff]
+    const bx=cx[i]-BOX_W/2,by=cy[i]-BOX_H/2
+    const boxOp=ov.dimOpacity
+
+    // base box (As-Is colors intact)
+    svg+=`<rect x="${bx}" y="${by}" width="${BOX_W}" height="${BOX_H}" rx="5" fill="${col.fill}" stroke="${col.stroke}" stroke-width="1" opacity="${boxOp}"/>`
+
+    // overlay: outer glow border (変・新・要確認)
+    if(ov.outerStroke){
+      svg+=`<rect x="${bx-2}" y="${by-2}" width="${BOX_W+4}" height="${BOX_H+4}" rx="7" fill="none" stroke="${ov.outerStroke}" stroke-width="${ov.outerW}" opacity="0.9"/>`
+    }
+
+    // overlay: dim mask for 廃止
+    if(st.diff==='del'){
+      svg+=`<rect x="${bx}" y="${by}" width="${BOX_W}" height="${BOX_H}" rx="5" fill="#f8fafc" opacity="0.55"/>`
+    }
+
+    // badge (right-top, outside box)
+    if(ov.badge){
+      const bw=22,bh=13
+      const bx2=bx+BOX_W-bw,by2=by-bh/2-2
+      svg+=`<rect x="${bx2}" y="${by2}" width="${bw}" height="${bh}" rx="3" fill="${ov.badge.bg}" stroke="${ov.outerStroke||'#cbd5e1'}" stroke-width="0.5"/>`
+      svg+=`<text x="${bx2+bw/2}" y="${by2+9}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${ov.badge.color}" font-weight="700">${ov.badge.text}</text>`
+    }
+
+    // label text
+    const lines=wrap(st.label,BOX_W-14),lh=13,th=lines.length*lh
+    const sy=by+(BOX_H-th)/2+lh*0.85
+    lines.forEach((ln,li)=>{
+      svg+=`<text x="${cx[i]}" y="${sy+li*lh}" text-anchor="middle" font-size="10.5" font-family="sans-serif" fill="${col.text}" font-weight="600" opacity="${boxOp}">${esc(ln)}</text>`
+    })
+
+    // strikethrough overlay for 廃止
+    if(st.diff==='del'){
+      const midY=by+BOX_H/2
+      svg+=`<line x1="${bx+8}" y1="${midY}" x2="${bx+BOX_W-8}" y2="${midY}" stroke="#94a3b8" stroke-width="1.5"/>`
+    }
+
+    // tool tags (非廃止のみ)
+    if(st.tools.length&&st.diff!=='del'){
+      let tx=cx[i]-(st.tools.reduce((a,t)=>a+t.length*6+12,0)+st.tools.length*3)/2
+      st.tools.forEach(t=>{
+        const tw=t.length*6+10;tx=Math.max(bx+2,tx)
+        const isJinjer=t.toLowerCase().includes('jinjer')
+        const tagFill=isJinjer?'#9FE1CB':'#e2e8f0'
+        const tagText=isJinjer?'#085041':'#475569'
+        svg+=`<rect x="${tx}" y="${by+BOX_H+2}" width="${tw}" height="12" rx="3" fill="${tagFill}"/>`
+        svg+=`<text x="${tx+tw/2}" y="${by+BOX_H+10}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${tagText}">${esc(t)}</text>`
+        tx+=tw+4
+      })
+    }
+  }
+  svg+='</svg>';return svg
+}
+
+function addFlowRow(flow,tbody){
+  const tr=document.createElement('tr');tr.id=flow.id
+  tr.style.borderTop='1px solid #cbd5e1'
+  const g=document.createElement('td');g.className='g-cell'
+  g.innerHTML=`<div class="g-no">${flow.no}</div><div class="g-name">${flow.name}</div><span class="g-freq">${flow.freq}</span>`
+  tr.appendChild(g)
+  const sd=document.createElement('td');sd.colSpan=3;sd.style.cssText='padding:0;border:none'
+  sd.innerHTML=buildSVG(flow);tr.appendChild(sd);tbody.appendChild(tr)
+  const sep=document.createElement('tr');sep.className='flow-sep'
+  sep.innerHTML='<td colspan="4"></td>';tbody.appendChild(sep)
+}
+
+;['a','b','c'].forEach(cat=>FLOWS.filter(f=>f.cat===cat).forEach(f=>addFlowRow(f,document.getElementById('tbody-'+cat))))
+
+let activeCat=null
+function buildCatRow(){
+  const row=document.getElementById('catRow');row.innerHTML=''
+  Object.entries(CATS).forEach(([cat,info])=>{
+    const b=document.createElement('button');b.className='cat-btn '+cat+(activeCat===cat?' on':'')
+    b.id='cat-'+cat;b.textContent=info.label;b.onclick=()=>toggleCat(cat);row.appendChild(b)
+  })
+}
+function buildSubRow(cat){
+  const row=document.getElementById('subRow');row.innerHTML=''
+  FLOWS.filter(f=>f.cat===cat).forEach(f=>{
+    const b=document.createElement('button');b.className='sub-btn';b.id='sub-'+f.id
+    b.textContent=f.no+' '+f.name;b.onclick=()=>jumpTo(f.id);row.appendChild(b)
+  })
+}
+function jumpTo(id){
+  const scroller=document.getElementById('scroller'),target=document.getElementById(id)
+  if(!target||!scroller) return
+  let offset=0,el=target
+  while(el&&el!==scroller){offset+=el.offsetTop;el=el.offsetParent}
+  scroller.scrollTo({top:offset,behavior:'smooth'})
+}
+function toggleCat(cat){
+  const wrap=document.getElementById('subWrap')
+  if(activeCat===cat){activeCat=null;wrap.classList.remove('open');document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));return}
+  activeCat=cat;buildCatRow();buildSubRow(cat);wrap.classList.add('open')
+}
+buildCatRow()
+
+const scroller=document.getElementById('scroller')
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return
+    const f=FLOWS.find(x=>x.id===e.target.id);if(!f) return
+    if(f.cat!==activeCat){activeCat=f.cat;buildCatRow();buildSubRow(f.cat);document.getElementById('subWrap').classList.add('open')}
+    document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('on','a','b','c'))
+    const sb=document.getElementById('sub-'+f.id);if(sb) sb.classList.add('on',f.cat)
+  })
+},{root:scroller,threshold:0.05,rootMargin:'-40px 0px -70% 0px'})
+FLOWS.forEach(f=>{const el=document.getElementById(f.id);if(el) obs.observe(el)})
+</script>
+</body>
+</html>

@@ -14,13 +14,12 @@ html,body{height:100%;overflow:hidden;font-family:'Helvetica Neue',Arial,'Hiragi
 .tobe-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;background:#0F6E56;color:#fff}
 .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;align-items:center}
 .leg{display:flex;align-items:center;gap:5px;font-size:10px;color:#64748b}
-.leg-swatch{width:32px;height:16px;border-radius:4px;flex-shrink:0;position:relative;border:1px solid #cbd5e1}
-.leg-swatch.chg{border:2.5px solid #BA7517;box-shadow:0 0 0 1.5px #BA751730}
-.leg-swatch.del{border:1px solid #cbd5e1;opacity:0.45}
-.leg-swatch.del::after{content:'';position:absolute;top:50%;left:4px;right:4px;height:1.5px;background:#94a3b8;transform:translateY(-50%)}
-.leg-swatch.add{border:2.5px solid #3B6D11;box-shadow:0 0 0 1.5px #3B6D1130}
-.leg-swatch.tbd{border:2.5px solid #7F77DD;box-shadow:0 0 0 1.5px #7F77DD30}
-.leg-swatch-inner{width:100%;height:100%;background:#EFF6FF;border-radius:3px}
+.leg-box{width:28px;height:16px;border-radius:4px;background:#EFF6FF;flex-shrink:0;position:relative}
+.leg-box.chg{outline:2.5px solid #BA7517;outline-offset:1px}
+.leg-box.del{opacity:0.4}
+.leg-box.del::after{content:'';position:absolute;top:50%;left:3px;right:3px;height:1.5px;background:#94a3b8}
+.leg-box.add{outline:2.5px solid #3B6D11;outline-offset:1px}
+.leg-box.tbd{outline:2.5px solid #7F77DD;outline-offset:1px}
 .cat-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .cat-btn{padding:5px 14px;border-radius:99px;border:1.5px solid;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent}
 .cat-btn.a{border-color:#185FA5;color:#185FA5}.cat-btn.a.on{background:#185FA5;color:#fff}
@@ -69,21 +68,11 @@ html,body{height:100%;overflow:hidden;font-family:'Helvetica Neue',Arial,'Hiragi
       <span class="tobe-badge">To-Be / Jinjer移行後</span>
     </div>
     <div class="legend">
-      <div class="leg">
-        <div class="leg-swatch chg"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>変更
-      </div>
-      <div class="leg">
-        <div class="leg-swatch del"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>廃止
-      </div>
-      <div class="leg">
-        <div class="leg-swatch add"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>新規追加
-      </div>
-      <div class="leg">
-        <div class="leg-swatch tbd"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>要確認
-      </div>
-      <div class="leg">
-        <div class="leg-swatch" style="border:1px solid #cbd5e1"><div class="leg-swatch-inner" style="background:#EFF6FF"></div></div>変わらず
-      </div>
+      <div class="leg"><div class="leg-box chg"></div>変更</div>
+      <div class="leg"><div class="leg-box del"></div>廃止（参考）</div>
+      <div class="leg"><div class="leg-box add"></div>新規追加</div>
+      <div class="leg"><div class="leg-box tbd"></div>要確認</div>
+      <div class="leg"><div class="leg-box"></div>変わらず</div>
     </div>
     <div class="cat-row" id="catRow"></div>
     <div class="sub-wrap" id="subWrap"><div class="sub-row" id="subRow"></div></div>
@@ -106,63 +95,105 @@ html,body{height:100%;overflow:hidden;font-family:'Helvetica Neue',Arial,'Hiragi
   </div>
 </div>
 <script>
-const C={
-  kFill:'#EFF6FF',kBorder:'#93C5FD',kText:'#1E40AF',
-  nFill:'#F0FDF4',nBorder:'#86EFAC',nText:'#166534',
-  iFill:'#FFFBEB',iBorder:'#FCD34D',iText:'#92400E',
-  line:'#94A3B8',arrow:'#64748B'
+const C={kFill:'#EFF6FF',kBorder:'#93C5FD',kText:'#1E40AF',nFill:'#F0FDF4',nBorder:'#86EFAC',nText:'#166534',iFill:'#FFFBEB',iBorder:'#FCD34D',iText:'#92400E',line:'#94A3B8',arrow:'#64748B'}
+const OV={
+  keep:{os:null,ow:0,badge:null,dim:1,strike:false},
+  chg: {os:'#BA7517',ow:2.5,badge:{t:'変',bg:'#FAEEDA',c:'#633806'},dim:1,strike:false},
+  add: {os:'#3B6D11',ow:2.5,badge:{t:'新',bg:'#C0DD97',c:'#173404'},dim:1,strike:false},
+  del: {os:null,ow:0,badge:{t:'廃',bg:'#f1f5f9',c:'#94a3b8'},dim:0.38,strike:true},
+  tbd: {os:'#7F77DD',ow:2.5,badge:{t:'確',bg:'#CECBF6',c:'#26215C'},dim:1,strike:false},
 }
-// オーバーレイのみ定義。ボックス自体の色はAs-Is同様lane色を使う
-const OVERLAY={
-  keep:{outerStroke:null,outerW:0,badge:null,dimOpacity:1,strike:false},
-  chg: {outerStroke:'#BA7517',outerW:2.5,badge:{text:'変',bg:'#FAEEDA',color:'#633806'},dimOpacity:1,strike:false},
-  add: {outerStroke:'#3B6D11',outerW:2.5,badge:{text:'新',bg:'#C0DD97',color:'#173404'},dimOpacity:1,strike:false},
-  del: {outerStroke:null,outerW:0,badge:{text:'廃',bg:'#f1f5f9',color:'#94a3b8'},dimOpacity:0.38,strike:true},
-  tbd: {outerStroke:'#7F77DD',outerW:2.5,badge:{text:'確',bg:'#CECBF6',color:'#26215C'},dimOpacity:1,strike:false},
-}
-const LANE_W=180,BOX_H=44,BOX_W=160,ROW_H=68,SVG_W=LANE_W*3
-const LANE_CX=[LANE_W/2,LANE_W+LANE_W/2,LANE_W*2+LANE_W/2]
+const LW=180,BH=44,BW=160,RH=68,SW=LW*3
+const LCX=[LW/2,LW+LW/2,LW*2+LW/2]
 const COL={k:0,n:1,i:2}
 const CATS={a:{label:'従業員情報管理'},b:{label:'勤怠・給与計算'},c:{label:'有期雇用管理'}}
 
+// 資料原本通りに完全再構築
+// lane: k=BPIO, n=NTS担当者, i=IHIBS担当者
+// diff: keep/chg/add/del/tbd
 const FLOWS=[
+  // ① 入社登録
+  // To-Be: 5ステップ (資料通り)
+  // Step1: 受領連絡 / BPIO・業務統括室 / メール・入社処理・書類配布 / 変更（要確認→移行）
+  // Step2: 書類確認・ファイル移動 / BPIO / 入社処理 / 移行
+  // Step3: チェックリスト準備 / 業務統括室 / Excel / 現状維持
+  // Step4: jinjerへ従業員情報登録 / BPIO / jinjer人事労務 / 移行
+  // Step5: 登録完了連絡 / BPIO・業務統括室 / メール / 現状維持
   {id:'g01',no:'①',name:'入社登録',freq:'随時',cat:'a',steps:[
-    {lane:'n',label:'入社資料一式を送付',tools:['メール'],diff:'keep'},
-    {lane:'k',label:'資料受領',tools:['メール','jinjer入社処理'],diff:'chg'},
-    {lane:'k',label:'書類確認・jinjer入社処理で登録',tools:['jinjer入社処理'],diff:'chg'},
+    {lane:'k',label:'受領連絡',tools:['メール','jinjer入社処理','書類配布'],diff:'chg'},
+    {lane:'k',label:'書類確認・ファイル移動',tools:['jinjer入社処理'],diff:'chg'},
     {lane:'k',label:'チェックリスト準備',tools:['Excel'],diff:'keep'},
     {lane:'k',label:'jinjerへ従業員情報登録',tools:['jinjer人事労務'],diff:'chg'},
     {lane:'k',label:'登録完了連絡',tools:['メール'],diff:'keep'},
     {lane:'n',label:'完了報告を受領',tools:[],diff:'keep'},
   ]},
+
+  // ② 退職登録
+  // To-Be: 1ステップのみ (資料通り)
+  // As Step1(受領連絡): 廃止
+  // As Step2(退職情報登録) → To-Be Step1: 退職者がjinjer WFで申請 / 担当:退職者
+  // As Step3(完了連絡): 廃止
   {id:'g02',no:'②',name:'退職登録',freq:'随時',cat:'a',steps:[
+    {lane:'k',label:'受領連絡',tools:['メール'],diff:'del'},
     {lane:'n',label:'退職申請をJinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
-    {lane:'k',label:'承認・退職情報を自動反映確認',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'登録完了連絡',tools:['メール'],diff:'del'},
   ]},
+
+  // ③ 正社員登用
+  // To-Be: 3ステップ (資料通り)
+  // Step1: jinjerWF申請 / 担当:業務統括室（熊本）担当者=BPIO / jinjerWF / 移行
+  //   ※備考「NTS担当者よりjinjerWFで申請」→NTSが申請しBPIOが確認受信
+  // Step2: 従業員情報変更登録 / BPIO / jinjer人事労務 / 移行
+  // Step3: 登録完了連絡 / BPIO / メール / 現状維持
   {id:'g03',no:'③',name:'正社員登用',freq:'随時',cat:'a',steps:[
     {lane:'n',label:'jinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'jinjer WF申請の確認受信',tools:['jinjer WF'],diff:'chg'},
     {lane:'k',label:'従業員情報変更登録',tools:['jinjer人事労務'],diff:'chg'},
     {lane:'k',label:'登録完了連絡',tools:['メール'],diff:'keep'},
     {lane:'n',label:'完了報告を受領',tools:[],diff:'keep'},
   ]},
+
+  // ④ 組織改訂
+  // To-Be: 6ステップ (資料通り)
+  // As Step3(データ送付→IHIBS): 廃止
+  // As Step4(取込結果受領): 廃止
+  // As Step7(所属変更データ送付): 廃止
+  // As Step8(取込結果受領2回目): 廃止
+  // To-Be Step1: 組織改訂資料受領 / 業務統括室 / メール・共有フォルダ / 現状維持
+  // To-Be Step2: 組織変更データ作成 / 業務統括室 / jinjer人事労務 / 移行
+  // To-Be Step3: 結果内容確認依頼 / 業務統括室・BPIO / jinjer人事労務 / 移行(As5)
+  // To-Be Step4: 従業員所属等変更データ作成 / BPIO / jinjer人事労務 / 移行(As6)
+  // To-Be Step5: 結果内容確認依頼(2回目) / BPIO / jinjer人事労務 / 移行(As9)
+  // To-Be Step6: 作業完了報告 / 業務統括室 / メール / 現状維持(As10)
   {id:'g04',no:'④',name:'組織改訂',freq:'随時・年度末',cat:'a',steps:[
     {lane:'n',label:'組織図・部門コード等を送付',tools:['メール'],diff:'keep'},
     {lane:'k',label:'組織改訂資料受領',tools:['メール','共有フォルダ'],diff:'keep'},
     {lane:'k',label:'組織変更データ作成',tools:['jinjer人事労務'],diff:'chg'},
     {lane:'k',label:'結果内容確認依頼',tools:['jinjer人事労務'],diff:'chg'},
-    {lane:'n',label:'内容確認・回答',tools:['メール'],diff:'keep'},
-    {lane:'k',label:'回答受領',tools:['メール'],diff:'keep'},
-    {lane:'k',label:'従業員所属変更データ作成・取込',tools:['jinjer人事労務'],diff:'chg'},
+    {lane:'k',label:'従業員所属等変更データ作成・取込',tools:['jinjer人事労務'],diff:'chg'},
     {lane:'k',label:'結果内容確認依頼（2回目）',tools:['jinjer人事労務'],diff:'chg'},
     {lane:'k',label:'作業完了報告',tools:['メール'],diff:'keep'},
     {lane:'n',label:'完了報告を受領',tools:[],diff:'keep'},
   ]},
+
+  // ⑤ その他変更
+  // To-Be: 3ステップ (資料通り)
+  // Step1: jinjerWFにて申請 / 申請者本人(NTSレーンではなくn扱い) / jinjerWF / 移行
+  // Step2: 情報変更登録 / 業務統括室・BPIO / jinjerWF・人事労務 / 移行
+  // Step3: 登録完了連絡 / 業務統括室 / jinjerWF・メール / 移行
   {id:'g05',no:'⑤',name:'その他変更',freq:'随時',cat:'a',steps:[
-    {lane:'n',label:'本人or上長がjinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
+    {lane:'n',label:'申請者本人がjinjer WFで申請',tools:['jinjer WF'],diff:'chg'},
     {lane:'k',label:'情報変更登録',tools:['jinjer WF','jinjer人事労務'],diff:'chg'},
     {lane:'k',label:'登録完了連絡',tools:['jinjer WF','メール'],diff:'chg'},
     {lane:'n',label:'完了報告を受領（WF回覧）',tools:[],diff:'chg'},
   ]},
+
+  // ⑥ 勤怠計算
+  // To-Be: 3ステップ (資料通り) + 廃止6ステップを参考表示
+  // Step1(As1): 賃金日程確認 / 業務統括室・BPIO / メール / 現状維持（送付元BPIO）
+  // Step1(As2): 勤怠投入状況確認 / 業務統括室 / Jinjer勤怠 / 移行
+  // Step2(As3): 未入力者への督促 / 業務統括室 / メール / 現状維持
+  // As Step4〜9: 廃止
   {id:'g06',no:'⑥',name:'勤怠計算',freq:'月次',cat:'b',steps:[
     {lane:'k',label:'賃金日程確認',tools:['メール'],diff:'keep'},
     {lane:'k',label:'勤怠投入状況確認',tools:['Jinjer勤怠'],diff:'chg'},
@@ -174,23 +205,47 @@ const FLOWS=[
     {lane:'k',label:'計算結果確認',tools:['Excel'],diff:'del'},
     {lane:'k',label:'時間外データ作成・送付',tools:['Excel','メール'],diff:'del'},
   ]},
+
+  // ⑦ 交通費データ作成
+  // To-Be: 3ステップ (資料通り) + 廃止2ステップ参考表示
+  // Step1(As1): 賃金予定表受領 / 業務統括室・BPIO / メール / 現状維持
+  // Step1(As2): 交通費申請 / 申請者本人 / jinjerWF / 移行（BPIOではなく本人）
+  // Step2(As3): 定期券代確認 / 業務統括室 / Yahoo乗換・ジョルダン / 現状維持
+  // Step3(As4): ガソリン代確認 / 申請者本人 / jinjerWF / 移行（本人申請→BPIO確認）
+  // As Step5〜6: 廃止
   {id:'g07',no:'⑦',name:'交通費データ作成',freq:'月次',cat:'b',steps:[
     {lane:'k',label:'賃金予定表受領',tools:['メール'],diff:'keep'},
     {lane:'n',label:'交通費申請（本人がWFで申請）',tools:['jinjer WF'],diff:'chg'},
-    {lane:'k',label:'交通費関連データ受領',tools:['メール'],diff:'keep'},
     {lane:'k',label:'定期券代確認',tools:['Yahoo乗換','ジョルダン'],diff:'keep'},
     {lane:'n',label:'ガソリン代申請（本人がWFで申請）',tools:['jinjer WF'],diff:'chg'},
-    {lane:'k',label:'ガソリン代確認',tools:['jinjer WF'],diff:'chg'},
+    {lane:'k',label:'ガソリン代確認（申請金額の確認）',tools:['jinjer WF'],diff:'chg'},
     {lane:'k',label:'支給控除データ作成',tools:['Excel投入表'],diff:'del'},
     {lane:'k',label:'支給控除データ送付',tools:['メール'],diff:'del'},
   ]},
+
+  // ⑧ その他支給控除
+  // To-Be: 2ステップ (資料通り) + 廃止1ステップ参考表示
+  // Step1(As1): 賃金予定表受領 / 業務統括室 / メール / 現状維持
+  // Step1(As2): 給与関連データ受領 / 業務統括室 / メール・共有フォルダ / 現状維持
+  //   ※As3(データ確認・精査)はStep2に統合 → 廃止扱い
+  // Step2(As4): 支給控除データ反映 / BPIO / Jinjer給与 / 移行
+  // As Step5: 廃止
   {id:'g08',no:'⑧',name:'その他支給控除',freq:'月次',cat:'b',steps:[
     {lane:'k',label:'賃金予定表受領',tools:['メール'],diff:'keep'},
     {lane:'n',label:'財形・融資・社宅等のデータを送付',tools:['メール'],diff:'keep'},
-    {lane:'k',label:'給与関連データ受領',tools:['メール'],diff:'keep'},
+    {lane:'k',label:'給与関連データ受領・確認',tools:['メール','共有フォルダ'],diff:'keep'},
     {lane:'k',label:'支給控除データ反映',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'支給控除データ送付',tools:['メール'],diff:'del'},
   ]},
+
+  // ⑨ 月次給与計算
+  // To-Be: 4ステップ (資料通り) + 廃止2ステップ参考表示
+  // As Step1(計算結果確認支給控除): 廃止
+  // As Step2(NET-J修正登録): 廃止
+  // Step1(As3): 賃金計算 / BPIO / Jinjer給与 / 移行
+  // Step2(As5): 賃金計算結果確認 / BPIO / Jinjer給与 / 移行
+  // Step3(As6): 賃金再計算 / BPIO / Jinjer給与 / 移行
+  // Step4(新規): 給与データ締め / BPIO / Jinjer給与 / 追加
   {id:'g09',no:'⑨',name:'月次給与計算',freq:'月次',cat:'b',steps:[
     {lane:'k',label:'計算結果確認（支給控除）',tools:['メール','Excel'],diff:'del'},
     {lane:'k',label:'NET-J修正登録',tools:['NET-J'],diff:'del'},
@@ -199,31 +254,67 @@ const FLOWS=[
     {lane:'k',label:'賃金再計算（必要時）',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'給与データ締め処理',tools:['Jinjer給与'],diff:'add'},
   ]},
+
+  // ⑩ 給与後処理①
+  // To-Be: 2ステップ (資料通り) + 廃止1ステップ参考表示
+  // Step1(As1): 再計算結果受領→給与データ出力 / BPIO / Jinjer給与 / 移行
+  // Step2(As2): 各部署用書類作成 / 業務統括室 / Excel / 現状維持
+  // As Step3(賃金明細出力依頼→IHIBS): 廃止
   {id:'g10',no:'⑩',name:'給与後処理①各部署書類',freq:'月次',cat:'b',steps:[
     {lane:'k',label:'給与データを出力',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'各部署用書類作成',tools:['Excel'],diff:'keep'},
     {lane:'k',label:'賃金明細出力依頼',tools:['メール'],diff:'del'},
   ]},
+
+  // ⑪ 給与後処理②
+  // To-Be: 3ステップ全て存在 (資料通り)
+  // Step1(As1): 後処理データ出力 / BPIO / Jinjer給与 / 移行
+  // Step2(As2): 労務構成表作成 / 業務統括室 / Excel / 現状維持
+  // Step3(As3): 各種資料送付 / 業務統括室 / メール / 現状維持
   {id:'g11',no:'⑪',name:'給与後処理②各種資料送付',freq:'月次',cat:'b',steps:[
-    {lane:'k',label:'給与振込・住民税納付データ出力',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'後処理データ出力',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'労務構成表作成',tools:['Excel'],diff:'keep'},
     {lane:'k',label:'各種資料送付',tools:['メール'],diff:'keep'},
     {lane:'n',label:'各種資料を受領',tools:[],diff:'keep'},
   ]},
+
+  // ⑫ 月変者確認
+  // To-Be: 3ステップ (資料通り)
+  // Step1(As1): 次月用組合控除データ送付 / 業務統括室 / Jinjer人事労務・メール / 要確認(原本条件も要確認)
+  // Step2(As2): 月変者確認 / 業務統括室 / Jinjer給与 / 移行
+  // Step3(As3): 月変者報告 / 業務統括室 / Jinjer給与・メール / 移行
   {id:'g12',no:'⑫',name:'給与後処理③月変者確認',freq:'月次',cat:'b',steps:[
     {lane:'k',label:'次月用組合控除データ送付',tools:['Jinjer人事労務','メール'],diff:'tbd'},
     {lane:'k',label:'月変算定・対象者確認',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'月変者報告',tools:['Jinjer給与','メール'],diff:'chg'},
     {lane:'n',label:'月変者報告を受領',tools:[],diff:'chg'},
   ]},
+
+  // ⑬ 一時金計算
+  // To-Be: 5ステップ (資料通り)
+  // Step1(As1): 出勤係数確認 / 業務統括室 / jinjer勤怠 / 移行
+  // Step2(As2): 支給額計算 / 業務統括室 / Excel / 現状維持
+  // Step3(As3): 社内融資計算 / 業務統括室 / Excel / 現状維持
+  // Step4(As4): 取込・計算 / 業務統括室 / Jinjer給与 / 移行
+  // Step5(As5): 一時金データ送付 / 業務統括室 / メール / 現状維持
   {id:'g13',no:'⑬',name:'一時金計算',freq:'年次（賞与）',cat:'b',steps:[
     {lane:'k',label:'出勤係数確認',tools:['Jinjer勤怠'],diff:'chg'},
     {lane:'k',label:'支給額計算',tools:['Excel'],diff:'keep'},
     {lane:'k',label:'社内融資計算',tools:['Excel'],diff:'keep'},
-    {lane:'k',label:'Jinjer給与に取込・賞与計算実施',tools:['Jinjer給与'],diff:'chg'},
+    {lane:'k',label:'Jinjer給与に取込・賞与計算',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'一時金データ送付',tools:['メール'],diff:'keep'},
     {lane:'n',label:'一時金データを受領',tools:[],diff:'keep'},
   ]},
+
+  // ⑭ 臨時一時金計算
+  // To-Be: 5ステップ (資料通り) + 廃止2ステップ参考表示
+  // Step1(As1): 支給有無確認・評価依頼 / BPIO / メール / 現状維持
+  // Step2(As2): 一括取込シート作成 / BPIO / jinjerインポート / 移行
+  // As Step3(IHIBSへ取込シート送付): 廃止
+  // As Step4(NET-Jマスタ修正): 廃止
+  // Step3(As5): 臨時一時金計算結果確認 / BPIO / Jinjer給与 / 移行
+  // Step4(As6): 臨時一時金明細作成 / BPIO / Jinjer給与 / 移行
+  // Step5(As7): 財務部提出 / 業務統括室 / Excel・メール / 現状維持
   {id:'g14',no:'⑭',name:'臨時一時金計算',freq:'随時',cat:'b',steps:[
     {lane:'k',label:'支給有無確認・評価依頼',tools:['メール'],diff:'keep'},
     {lane:'n',label:'確認・評価査定を回答',tools:['メール'],diff:'keep'},
@@ -234,6 +325,15 @@ const FLOWS=[
     {lane:'k',label:'臨時一時金明細書出力',tools:['Jinjer給与'],diff:'chg'},
     {lane:'k',label:'確定データ財務部提出',tools:['Excel','メール'],diff:'keep'},
   ]},
+
+  // ⑮ 退職金計算
+  // To-Be: 6ステップ (資料通り)
+  // Step1(As1): 退職者情報受領・確認 / 業務統括室 / Jinjer人事労務 / 移行
+  // Step2(As2): 一括取込シート作成 / 業務統括室 / Excel / 現状維持
+  // Step3(As3): 一括取込シート取込 / 業務統括室 / Jinjer退職金 / 移行(As3はIHIBSから受領→取込に変更)
+  // Step4(As4): 退職金計算結果確認 / 業務統括室 / Jinjer退職金 / 移行
+  // Step5(As5): 退職金計算確定 / 業務統括室 / Jinjer退職金 / 移行
+  // Step6(As6): 住民税資料作成 / 業務統括室 / Excel / 現状維持
   {id:'g15',no:'⑮',name:'退職金計算',freq:'随時',cat:'b',steps:[
     {lane:'n',label:'退職願等を送付',tools:['メール'],diff:'keep'},
     {lane:'k',label:'退職者情報確認・対象可否判定',tools:['Jinjer人事労務'],diff:'chg'},
@@ -243,19 +343,39 @@ const FLOWS=[
     {lane:'k',label:'退職金計算を確定',tools:['Jinjer退職金'],diff:'chg'},
     {lane:'k',label:'住民税資料作成',tools:['Excel'],diff:'keep'},
   ]},
+
+  // ⑯ 賃金更改
+  // To-Be: 10ステップ (資料通り)
+  // Step1(As1): 管理職一覧表作成（4月） / 業務統括室 / Excel / 現状維持
+  // Step2(As2): 社内資料受領 / 業務統括室 / メール・共有フォルダ / 現状維持
+  // Step3(As3): 一括取込シート作成 / BPIO / jinjerインポート・人事労務 / 移行(受領→作成に変更)
+  // Step4(As4): 賃金更改資料作成 / 業務統括室 / Excel / 現状維持
+  // Step5(As5): 賃金更改資料送付 / 業務統括室 / メール / 変更(送付先がBPIOへ)
+  // Step6(As6): 一括取込結果確認 / BPIO / jinjerインポート・人事労務 / 移行
+  // Step7(As7): 賃金辞令作成資料作成 / 業務統括室 / Excel / 現状維持
+  // Step8(As8): ナスカクリエイトへ依頼 / 業務統括室 / メール / 現状維持
+  // Step9(As9): 一般職FMT作成・取込（5月） / BPIO / jinjerインポート・人事労務 / 移行
+  // Step10(As10): 一般職取込結果確認 / BPIO・業務統括室 / 人事労務 / 移行
   {id:'g16',no:'⑯',name:'賃金更改',freq:'年次',cat:'b',steps:[
     {lane:'n',label:'組織役職別職務給一覧表等を送付',tools:['メール'],diff:'keep'},
     {lane:'k',label:'管理職一覧表作成（4月）',tools:['Excel'],diff:'keep'},
     {lane:'k',label:'社内資料受領',tools:['メール','共有フォルダ'],diff:'keep'},
-    {lane:'k',label:'jinjerインポート用FMT作成・取込',tools:['jinjerインポート'],diff:'chg'},
+    {lane:'k',label:'jinjerインポート用FMT作成・取込',tools:['jinjerインポート','人事労務'],diff:'chg'},
     {lane:'k',label:'賃金更改資料作成',tools:['Excel'],diff:'keep'},
-    {lane:'k',label:'賃金更改資料送付',tools:['メール'],diff:'chg'},
+    {lane:'k',label:'賃金更改資料送付（→BPIO）',tools:['メール'],diff:'chg'},
     {lane:'k',label:'一括取込結果確認',tools:['jinjerインポート','人事労務'],diff:'chg'},
     {lane:'k',label:'賃金辞令作成資料作成',tools:['Excel'],diff:'keep'},
     {lane:'k',label:'ナスカクリエイトへ依頼',tools:['メール'],diff:'keep'},
-    {lane:'k',label:'一般職FMT作成・取込（5月）',tools:['jinjerインポート'],diff:'chg'},
+    {lane:'k',label:'一般職FMT作成・取込（5月）',tools:['jinjerインポート','人事労務'],diff:'chg'},
     {lane:'k',label:'一般職取込結果確認',tools:['jinjer人事労務'],diff:'chg'},
   ]},
+
+  // ⑰ 契約更新有無確認
+  // To-Be: 4ステップ (資料通り、全て現状維持 or 変更)
+  // Step1(As1): 契約更新対象の抽出 / 業務統括室 / jinjer人事労務・Excel / 移行
+  // Step2(As2): 契約更新有無確認依頼 / 業務統括室 / メール / 現状維持
+  // Step3(As3): 確認回答受領 / NTS担当者 / メール / 現状維持
+  // Step4(As4): 次手続きへ連携 / 業務統括室 / メール / 現状維持
   {id:'g17',no:'⑰',name:'契約更新有無確認',freq:'随時・四半期',cat:'c',steps:[
     {lane:'k',label:'更新対象者抽出',tools:['Jinjer人事労務','Excel'],diff:'chg'},
     {lane:'k',label:'更新有無確認依頼',tools:['メール'],diff:'keep'},
@@ -263,11 +383,20 @@ const FLOWS=[
     {lane:'k',label:'回答受領',tools:['メール'],diff:'keep'},
     {lane:'k',label:'次手続きへ連携（⑱または⑲）',tools:['メール'],diff:'keep'},
   ]},
+
+  // ⑱ 労働契約更新
+  // To-Be: 1ステップ (資料通り)
+  // As Step2(メール送付): 廃止
   {id:'g18',no:'⑱',name:'労働契約更新',freq:'随時・四半期',cat:'c',steps:[
     {lane:'k',label:'労働契約書作成・配布',tools:['jinjer人事労務','jinjer書類送付'],diff:'chg'},
     {lane:'n',label:'労働契約書を受領',tools:[],diff:'keep'},
     {lane:'k',label:'メールで送付',tools:['メール'],diff:'del'},
   ]},
+
+  // ⑲ 新規労働契約
+  // To-Be: 1ステップ (資料通り)
+  // As Step2(メール送付): 廃止
+  // As Step3(個人コード変更連絡): 要確認のまま（原本に条件記載なし）
   {id:'g19',no:'⑲',name:'新規労働契約',freq:'随時・四半期',cat:'c',steps:[
     {lane:'k',label:'労働契約書作成・配布',tools:['jinjer人事労務','jinjer書類送付'],diff:'chg'},
     {lane:'n',label:'労働契約書を受領',tools:[],diff:'keep'},
@@ -278,89 +407,57 @@ const FLOWS=[
 
 function lc(l){return l==='k'?{fill:C.kFill,stroke:C.kBorder,text:C.kText}:l==='n'?{fill:C.nFill,stroke:C.nBorder,text:C.nText}:{fill:C.iFill,stroke:C.iBorder,text:C.iText}}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function wrap(t,mw){const mc=Math.floor(mw/6.5),words=t.split(''),lines=[];let ln='';for(const w of words){if((ln+w).length<=mc){ln+=w}else{if(ln)lines.push(ln);ln=w}}if(ln)lines.push(ln);return lines}
+function wrap(t,mw){const mc=Math.floor(mw/6.5),w=t.split(''),lines=[];let ln='';for(const c of w){if((ln+c).length<=mc){ln+=c}else{if(ln)lines.push(ln);ln=c}}if(ln)lines.push(ln);return lines}
 
 function buildSVG(flow){
-  const s=flow.steps,n=s.length,H=n*ROW_H+24
-  const TAG_H=14
-  let svg=`<svg viewBox="0 0 ${SVG_W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%">`
-
-  // lane backgrounds
-  svg+=`<rect x="0" y="0" width="${LANE_W}" height="${H}" fill="#EFF6FF" opacity="0.4"/>`
-  svg+=`<rect x="${LANE_W}" y="0" width="${LANE_W}" height="${H}" fill="#F0FDF4" opacity="0.4"/>`
-  svg+=`<rect x="${LANE_W*2}" y="0" width="${LANE_W}" height="${H}" fill="#FFFBEB" opacity="0.4"/>`
-  svg+=`<line x1="${LANE_W}" y1="0" x2="${LANE_W}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
-  svg+=`<line x1="${LANE_W*2}" y1="0" x2="${LANE_W*2}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
-
-  const cy=s.map((_,i)=>16+i*ROW_H+BOX_H/2)
-  const cx=s.map(st=>LANE_CX[COL[st.lane]])
-
+  const s=flow.steps,n=s.length,H=n*RH+24
+  let svg=`<svg viewBox="0 0 ${SW} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%">`
+  svg+=`<rect x="0" y="0" width="${LW}" height="${H}" fill="#EFF6FF" opacity="0.4"/>`
+  svg+=`<rect x="${LW}" y="0" width="${LW}" height="${H}" fill="#F0FDF4" opacity="0.4"/>`
+  svg+=`<rect x="${LW*2}" y="0" width="${LW}" height="${H}" fill="#FFFBEB" opacity="0.4"/>`
+  svg+=`<line x1="${LW}" y1="0" x2="${LW}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
+  svg+=`<line x1="${LW*2}" y1="0" x2="${LW*2}" y2="${H}" stroke="#CBD5E1" stroke-width="0.5"/>`
+  const cy=s.map((_,i)=>16+i*RH+BH/2)
+  const cx=s.map(st=>LCX[COL[st.lane]])
   // connectors
   for(let i=0;i<n-1;i++){
-    const bothDel=s[i].diff==='del'&&s[i+1].diff==='del'
-    const op=bothDel?0.25:1
-    const lcolor=bothDel?'#cbd5e1':C.line
-    const x1=cx[i],y1=cy[i]+BOX_H/2,x2=cx[i+1],y2=cy[i+1]-BOX_H/2
-    if(x1===x2){
-      svg+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${lcolor}" stroke-width="1.5" opacity="${op}"/>`
-    } else {
-      const mid=(y1+y2)/2
-      svg+=`<polyline points="${x1},${y1} ${x1},${mid} ${x2},${mid} ${x2},${y2}" fill="none" stroke="${lcolor}" stroke-width="1.5" stroke-linejoin="round" opacity="${op}"/>`
-    }
-    const ac=bothDel?'#cbd5e1':C.arrow
+    const bd=s[i].diff==='del'&&s[i+1].diff==='del'
+    const op=bd?0.25:1,lc2=bd?'#cbd5e1':C.line
+    const x1=cx[i],y1=cy[i]+BH/2,x2=cx[i+1],y2=cy[i+1]-BH/2
+    if(x1===x2){svg+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${lc2}" stroke-width="1.5" opacity="${op}"/>`}
+    else{const m=(y1+y2)/2;svg+=`<polyline points="${x1},${y1} ${x1},${m} ${x2},${m} ${x2},${y2}" fill="none" stroke="${lc2}" stroke-width="1.5" stroke-linejoin="round" opacity="${op}"/>`}
+    const ac=bd?'#cbd5e1':C.arrow
     svg+=`<polygon points="${x2},${y2} ${x2-5},${y2-7} ${x2+5},${y2-7}" fill="${ac}" opacity="${op}"/>`
   }
-
   // boxes + overlays
   for(let i=0;i<n;i++){
-    const st=s[i],col=lc(st.lane),ov=OVERLAY[st.diff]
-    const bx=cx[i]-BOX_W/2,by=cy[i]-BOX_H/2
-    const boxOp=ov.dimOpacity
-
-    // base box (As-Is colors intact)
-    svg+=`<rect x="${bx}" y="${by}" width="${BOX_W}" height="${BOX_H}" rx="5" fill="${col.fill}" stroke="${col.stroke}" stroke-width="1" opacity="${boxOp}"/>`
-
-    // overlay: outer glow border (変・新・要確認)
-    if(ov.outerStroke){
-      svg+=`<rect x="${bx-2}" y="${by-2}" width="${BOX_W+4}" height="${BOX_H+4}" rx="7" fill="none" stroke="${ov.outerStroke}" stroke-width="${ov.outerW}" opacity="0.9"/>`
-    }
-
-    // overlay: dim mask for 廃止
-    if(st.diff==='del'){
-      svg+=`<rect x="${bx}" y="${by}" width="${BOX_W}" height="${BOX_H}" rx="5" fill="#f8fafc" opacity="0.55"/>`
-    }
-
+    const st=s[i],col=lc(st.lane),ov=OV[st.diff]
+    const bx=cx[i]-BW/2,by=cy[i]-BH/2
+    // base box (lane colors intact = As-Is同じ)
+    svg+=`<rect x="${bx}" y="${by}" width="${BW}" height="${BH}" rx="5" fill="${col.fill}" stroke="${col.stroke}" stroke-width="1" opacity="${ov.dim}"/>`
+    // outer glow border overlay
+    if(ov.os){svg+=`<rect x="${bx-2}" y="${by-2}" width="${BW+4}" height="${BH+4}" rx="7" fill="none" stroke="${ov.os}" stroke-width="${ov.ow}" opacity="0.9"/>`}
+    // dim mask for 廃止
+    if(st.diff==='del'){svg+=`<rect x="${bx}" y="${by}" width="${BW}" height="${BH}" rx="5" fill="#f8fafc" opacity="0.55"/>`}
     // badge (right-top, outside box)
     if(ov.badge){
-      const bw=22,bh=13
-      const bx2=bx+BOX_W-bw,by2=by-bh/2-2
-      svg+=`<rect x="${bx2}" y="${by2}" width="${bw}" height="${bh}" rx="3" fill="${ov.badge.bg}" stroke="${ov.outerStroke||'#cbd5e1'}" stroke-width="0.5"/>`
-      svg+=`<text x="${bx2+bw/2}" y="${by2+9}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${ov.badge.color}" font-weight="700">${ov.badge.text}</text>`
+      const bw=22,bh=13,bx2=bx+BW-bw,by2=by-bh/2-2
+      svg+=`<rect x="${bx2}" y="${by2}" width="${bw}" height="${bh}" rx="3" fill="${ov.badge.bg}" stroke="${ov.os||'#cbd5e1'}" stroke-width="0.5"/>`
+      svg+=`<text x="${bx2+bw/2}" y="${by2+9}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${ov.badge.c}" font-weight="700">${ov.badge.t}</text>`
     }
-
-    // label text
-    const lines=wrap(st.label,BOX_W-14),lh=13,th=lines.length*lh
-    const sy=by+(BOX_H-th)/2+lh*0.85
-    lines.forEach((ln,li)=>{
-      svg+=`<text x="${cx[i]}" y="${sy+li*lh}" text-anchor="middle" font-size="10.5" font-family="sans-serif" fill="${col.text}" font-weight="600" opacity="${boxOp}">${esc(ln)}</text>`
-    })
-
-    // strikethrough overlay for 廃止
-    if(st.diff==='del'){
-      const midY=by+BOX_H/2
-      svg+=`<line x1="${bx+8}" y1="${midY}" x2="${bx+BOX_W-8}" y2="${midY}" stroke="#94a3b8" stroke-width="1.5"/>`
-    }
-
+    // label
+    const lines=wrap(st.label,BW-14),lh=13,th=lines.length*lh,sy=by+(BH-th)/2+lh*0.85
+    lines.forEach((ln,li)=>{svg+=`<text x="${cx[i]}" y="${sy+li*lh}" text-anchor="middle" font-size="10.5" font-family="sans-serif" fill="${col.text}" font-weight="600" opacity="${ov.dim}">${esc(ln)}</text>`})
+    // strikethrough
+    if(st.diff==='del'){const m=by+BH/2;svg+=`<line x1="${bx+8}" y1="${m}" x2="${bx+BW-8}" y2="${m}" stroke="#94a3b8" stroke-width="1.5"/>`}
     // tool tags (非廃止のみ)
     if(st.tools.length&&st.diff!=='del'){
       let tx=cx[i]-(st.tools.reduce((a,t)=>a+t.length*6+12,0)+st.tools.length*3)/2
       st.tools.forEach(t=>{
         const tw=t.length*6+10;tx=Math.max(bx+2,tx)
-        const isJinjer=t.toLowerCase().includes('jinjer')
-        const tagFill=isJinjer?'#9FE1CB':'#e2e8f0'
-        const tagText=isJinjer?'#085041':'#475569'
-        svg+=`<rect x="${tx}" y="${by+BOX_H+2}" width="${tw}" height="12" rx="3" fill="${tagFill}"/>`
-        svg+=`<text x="${tx+tw/2}" y="${by+BOX_H+10}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${tagText}">${esc(t)}</text>`
+        const isJ=t.toLowerCase().includes('jinjer')
+        svg+=`<rect x="${tx}" y="${by+BH+2}" width="${tw}" height="12" rx="3" fill="${isJ?'#9FE1CB':'#e2e8f0'}"/>`
+        svg+=`<text x="${tx+tw/2}" y="${by+BH+10}" text-anchor="middle" font-size="9" font-family="sans-serif" fill="${isJ?'#085041':'#475569'}">${esc(t)}</text>`
         tx+=tw+4
       })
     }
@@ -369,17 +466,14 @@ function buildSVG(flow){
 }
 
 function addFlowRow(flow,tbody){
-  const tr=document.createElement('tr');tr.id=flow.id
-  tr.style.borderTop='1px solid #cbd5e1'
+  const tr=document.createElement('tr');tr.id=flow.id;tr.style.borderTop='1px solid #cbd5e1'
   const g=document.createElement('td');g.className='g-cell'
   g.innerHTML=`<div class="g-no">${flow.no}</div><div class="g-name">${flow.name}</div><span class="g-freq">${flow.freq}</span>`
   tr.appendChild(g)
   const sd=document.createElement('td');sd.colSpan=3;sd.style.cssText='padding:0;border:none'
   sd.innerHTML=buildSVG(flow);tr.appendChild(sd);tbody.appendChild(tr)
-  const sep=document.createElement('tr');sep.className='flow-sep'
-  sep.innerHTML='<td colspan="4"></td>';tbody.appendChild(sep)
+  const sep=document.createElement('tr');sep.className='flow-sep';sep.innerHTML='<td colspan="4"></td>';tbody.appendChild(sep)
 }
-
 ;['a','b','c'].forEach(cat=>FLOWS.filter(f=>f.cat===cat).forEach(f=>addFlowRow(f,document.getElementById('tbody-'+cat))))
 
 let activeCat=null
@@ -410,7 +504,6 @@ function toggleCat(cat){
   activeCat=cat;buildCatRow();buildSubRow(cat);wrap.classList.add('open')
 }
 buildCatRow()
-
 const scroller=document.getElementById('scroller')
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
